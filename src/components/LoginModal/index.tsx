@@ -98,10 +98,10 @@ export function LoginCard(props: {
             key: 'login',
             label: '账户登录',
           },
-          {
-            key: 'register',
-            label: '注册账户',
-          },
+          // {
+          //   key: 'register',
+          //   label: '注册账户',
+          // },
         ]}
       />
       <ProFormText

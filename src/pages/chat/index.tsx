@@ -214,10 +214,10 @@ function ChatPage() {
 
   // 对话
   async function sendChatCompletions(vaule: string, refurbishOptions?: ChatGpt) {
-    if (!token) {
-      setLoginModal(true)
-      return
-    }
+    // if (!token) {
+    //   setLoginModal(true)
+    //   return
+    // }
     const selectChat = chats.filter((c) => c.id === selectChatId)[0]
     const parentMessageId = refurbishOptions?.requestOptions.parentMessageId || selectChat.id
     let userMessageId = generateUUID()
@@ -308,7 +308,7 @@ function ChatPage() {
                   })
                 }}
               />
-              <Space className={styles.space}>
+              {/* <Space className={styles.space}>
                 <Button
                   block
                   onClick={() => {
@@ -353,7 +353,7 @@ function ChatPage() {
                 }}
               >
                 会话配置
-              </Button>
+              </Button> */}
               <Popconfirm
                 title="删除全部对话"
                 description="您确定删除全部会话对吗? "

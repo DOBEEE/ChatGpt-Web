@@ -6,7 +6,10 @@ import { userStore } from '@/store'
 type AuthRouterProps = {
   children?: React.ReactNode
 }
-
+/**
+ * 权限校验
+ * 校验登录及权限
+ */
 function AuthRouter(props: AuthRouterProps) {
   const navigate = useNavigate()
   const location = useLocation()
