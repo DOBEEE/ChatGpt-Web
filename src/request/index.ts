@@ -68,30 +68,24 @@ const interceptorsRequest = (config: { url: string; options?: RequestInit }) => 
 const interceptorsResponse = async <T>(options: any, response: any): Promise<ResponseData<T>> => {
   console.log('响应拦截器：', options, response)
   let data: ResponseData<T> = await response.json()
-
-  if (!isResponseData(data)) {
-    data = {
-      code: response.status === 200 ? 0 : response.status,
-      data: (data as any)?.data ? (data as any).data : data,
-      message: ''
-    }
-  }
-
-  if (data.code) {
+  if (response.status !== 200) {
     if (response.status === 401 && data.code === 4001) {
       userStore.getState().logout()
       chatStore.getState().clearChats()
     }
-    if (data.message) {
-      notification.error({
-        message: '错误',
-        description: data.message ? data.message : '网络请求错误',
-        style: {
-          top: 60,
-          zIndex: 1011
-        }
-      })
-    }
+    notification.error({
+      message: '错误',
+      description: '网络请求错误',
+      style: {
+        top: 60,
+        zIndex: 1011
+      }
+    })
+  }
+  data = {
+    code: response.status === 200 ? 0 : response.status,
+    data: (data as any)?.data ? (data as any).data : data,
+    message: ''
   }
   return data
 }

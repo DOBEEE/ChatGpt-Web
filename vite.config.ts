@@ -29,10 +29,10 @@ export default defineConfig({
   },
   server: {
     host: '127.0.0.1',
-    port: 3000,
+    port: 3001,
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:8888',	//实际请求地址
+        target: 'http://47.94.232.127:8089',	//实际请求地址
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '')
       },

@@ -210,10 +210,10 @@ function DrawPage() {
       message.warning('请输入提示词')
       return
     }
-    if (!token) {
-      setLoginModal(true)
-      return
-    }
+    // if (!token) {
+    //   setLoginModal(true)
+    //   return
+    // }
     setDrawResultData({
       loading: true,
       list: []
@@ -398,7 +398,7 @@ function DrawPage() {
                 })}
               </Image.PreviewGroup>
             </div>
-            <div className={styles.drawPage_selectTab}>
+            {/* <div className={styles.drawPage_selectTab}>
               <Segmented
                 defaultValue="me"
                 value={drawRecordData.type}
@@ -422,9 +422,9 @@ function DrawPage() {
                   }
                 ]}
               />
-            </div>
+            </div> */}
             <div className={styles.drawPage_mydraw}>
-              <DrawPageHeader type={drawRecordData.type} />
+              {/* <DrawPageHeader type={drawRecordData.type} /> */}
               <DrawEmpty isShow={
                 drawRecordData.type === 'me' && historyDrawImages.length <= 0
                 ||

@@ -49,10 +49,10 @@ const configStore = create<ConfigState>()(
           label: 'GPT-3.5',
           value: 'gpt-3.5-turbo'
         },
-		{
-			label: 'GPT-3.5-16k',
-			value: 'gpt-3.5-turbo-16k'
-		},
+        // {
+        //   label: 'GPT-3.5-16k',
+        //   value: 'gpt-3.5-turbo-16k'
+        // },
         {
           label: 'GPT-4',
           value: 'gpt-4'
