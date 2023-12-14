@@ -53,19 +53,6 @@ const drawStore = create<DrawState>()(
           }
         }
 
-        if (type === 'gallery') {
-          if (index <= 1) {
-            return {
-              galleryDrawImages: [...images]
-            }
-          } else {
-            const newData = [...state.galleryDrawImages, ...images]
-            return {
-              galleryDrawImages: [...newData]
-            }
-          }
-        }
-
         return {
           historyDrawImages: [],
           galleryDrawImages: []

@@ -48,14 +48,14 @@ export function postChatCompletions(
   return request.postStreams<Response>('/api/textchat', params, config)
 }
 
-export function post35ChatCompletions(
+export function postImageCompletions(
   params: RequestChatOptions,
   config?: {
     headers?: { [key: string]: any }
     options?: { [key: string]: any }
   }
 ) {
-  return request.postStreams<Response>('/api/v1/chat/completions', params, config)
+  return request.postStreams<Response>('/api/imagechat', params, config)
 }
 
 export function postChatCompletion(

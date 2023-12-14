@@ -31,6 +31,7 @@ function ChatPage() {
   const scrollRef = useRef<HTMLDivElement>(null)
   const { scrollToBottomIfAtBottom, scrollToBottom } = useScroll(scrollRef.current)
   const { token, setLoginModal } = userStore()
+  const [character, setCharacter]= useState('xxx');
   const { config, models, changeConfig, setConfigModal } = configStore()
   const {
     chats,
@@ -342,6 +343,19 @@ function ChatPage() {
                   })
                 }}
               />
+              <Select
+                size="middle"
+                style={{ width: '100%' }}
+                defaultValue={'xxx'}
+                value={character}
+                options={[{
+                  label: '段子手',
+                  value: 'xxx'
+                }]}
+                onChange={(e) => {
+                  setCharacter(e.toString())
+                }}
+              />
               {/* <Space className={styles.space}>
                 <Button
                   block
@@ -361,33 +375,7 @@ function ChatPage() {
                 >
                   AI角色
                 </Button>
-              </Space>
-              <Button
-                block
-                onClick={() => {
-                  if (token) {
-                    setPluginModal({
-                      open: true
-                    })
-                  } else {
-                    setLoginModal(true)
-                  }
-                }}
-              >
-                智能插件
-              </Button>
-              <Button
-                block
-                onClick={() => {
-                  setConfigModal(true)
-                  // chatGptConfigform.setFieldsValue({
-                  //   ...config
-                  // })
-                  // setChatConfigModal({ open: true })
-                }}
-              >
-                会话配置
-              </Button> */}
+              </Space> */}
               <Popconfirm
                 title="删除全部对话"
                 description="您确定删除全部会话对吗? "
@@ -511,7 +499,7 @@ function ChatPage() {
         />
       </Modal> */}
 
-      {/* <PersonaModal
+      <PersonaModal
         {...personaModal}
         onCreateChat={(info) => {
           addChat({
@@ -527,7 +515,7 @@ function ChatPage() {
             open: false
           })
         }}
-      /> */}
+      />
 
       {/* <PluginModal
         {...pluginModal}

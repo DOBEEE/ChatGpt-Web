@@ -45,6 +45,12 @@ const web = [
     icon: <PictureOutlined />,
     message: '利用智能AI绘画出图片'
   },
+  {
+    path: '/image',
+    name: '绘画',
+    icon: <PictureOutlined />,
+    message: '利用智能AI绘画出图片'
+  },
   // {
   //   path: '/create',
   //   name: '创作',

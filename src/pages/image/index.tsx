@@ -5,11 +5,11 @@ import {
   RedditCircleFilled,
   RedditSquareFilled
 } from '@ant-design/icons'
-import { Button, Modal, Popconfirm, Space, Tabs, Select, message, Badge } from 'antd'
+import { Button, Modal,Radio, Popconfirm, Space, Tabs, Select, message, Badge } from 'antd'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 
 import styles from './index.module.less'
-import { chatStore, configStore, userStore } from '@/store'
+import { imageStore, configStore, userStore } from '@/store'
 import { chatAsync, pluginAsync } from '@/store/async'
 import RoleNetwork from './components/RoleNetwork'
 import RoleLocal from './components/RoleLocal'
@@ -27,6 +27,22 @@ import PersonaModal from '@/components/PersonaModal'
 import PluginModal from '@/components/pluginModal'
 import MessageItem from './components/MessageItem'
 
+const typeOptions = ['默认', '中国画', '3D绘图', '素描画', '像素画', '油画', '水彩画', '印象主义',
+'木刻艺术', '涂抹油画', '立体像素艺术', '技术绘图', '新表现主义', '电致发光多边几何', '纸雕', '霓虹立体派', '水彩像素艺术', '涂抹木炭画', '剪纸轮廓', '涂抹中国水墨画', '动漫水彩', '3D 皮克斯风格卡通', '霓虹线描', '等距乐高', '彩饰手抄本'];
+const sizeOptions = [
+  {
+    label: '1024x1024',
+    value: '1024x1024'
+  },
+  {
+    label: '1792x1024',
+    value: '1792x1024'
+  },
+  {
+    label: '1024x1792',
+    value: '1024x1792'
+  },
+]
 function ChatPage() {
   const scrollRef = useRef<HTMLDivElement>(null)
   const { scrollToBottomIfAtBottom, scrollToBottom } = useScroll(scrollRef.current)
@@ -43,11 +59,15 @@ function ChatPage() {
     setChatDataInfo,
     clearChatMessage,
     delChatMessage
-  } = chatStore()
+  } = imageStore()
 
   const bodyResize = useDocumentResize()
 
   const isMobile = useMobile()
+  const [size, setSize] = useState('1024x1024');
+  const [style, setStyle] = useState('vivid');
+  const [type, setType] = useState('默认');
+  const [model, setModel] = useState('dall-e-3');
 
   // 提示指令预设
   const [roleConfigModal, setRoleConfigModal] = useState({
@@ -123,7 +143,7 @@ function ChatPage() {
     requestOptions: RequestChatOptions
     assistantMessageId: string
   }) {
-    const response = await services.postChatCompletions(requestOptions, {
+    const response = await services.postImageCompletions(requestOptions, {
       options: {
         // headers: {
         //   Authorization: 
@@ -148,30 +168,13 @@ function ChatPage() {
 
       setChatDataInfo(selectChatId, assistantMessageId, {
         status: 'error',
-        text: `${response?.message || '❌ 请求异常，请稍后在尝试。'} \n \`\`\` ${JSON.stringify(response, null, 2)}   `
+        text: `${response?.data?.errmsg || '❌ 请求异常，请稍后在尝试。'} \n \`\`\` ${JSON.stringify(response, null, 2)}   `
       })
       fetchController?.abort()
       setFetchController(null)
       message.error('请求失败')
       return
     }
-    // if (!(response instanceof Response)) {
-    //   // 这里返回是错误 ...
-    //   if (userMessageId) {
-    //     setChatDataInfo(selectChatId, userMessageId, {
-    //       status: 'error'
-    //     })
-    //   }
-
-    //   setChatDataInfo(selectChatId, assistantMessageId, {
-    //     status: 'error',
-    //     text: `${response?.message || '❌ 请求异常，请稍后在尝试。'} \n \`\`\` ${JSON.stringify(response, null, 2)}   `
-    //   })
-    //   fetchController?.abort()
-    //   setFetchController(null)
-    //   message.error('请求失败')
-    //   return
-    // }
     setFetchController(null);
     if (userMessageId) {
       setChatDataInfo(selectChatId, userMessageId, {
@@ -179,7 +182,7 @@ function ChatPage() {
       })
     }
     setChatDataInfo(selectChatId, assistantMessageId, {
-      text: response?.data?.answer,
+      text: response?.data?.imgurl,
       dateTime: response?.data?.time,
       status: 'pass'
     })
@@ -252,17 +255,13 @@ function ChatPage() {
     const parentMessageId = refurbishOptions?.requestOptions.parentMessageId || selectChat.id
     let userMessageId = generateUUID()
     const requestOptions = {
-      chatid: selectChat?.persona_id || refurbishOptions?.persona_id || '',
+      chatid: selectChatId,
       model: config.model,
       message: vaule,
-      prompts: '你是一个段子手'
-      // prompt: vaule,
-      // parentMessageId,
-      // persona_id: selectChat?.persona_id || refurbishOptions?.persona_id || '',
-      // options: filterObjectNull({
-      //   ...config,
-      //   ...refurbishOptions?.requestOptions.options
-      // })
+      imgtype: type,
+      imgstyle: style,
+      imgsize: size,
+      quality: 'hd',
     }
     const assistantMessageId = refurbishOptions?.id || generateUUID()
     if (refurbishOptions?.requestOptions.parentMessageId && refurbishOptions?.id) {
@@ -309,7 +308,7 @@ function ChatPage() {
       <Layout
         menuExtraRender={() => <CreateChat />}
         route={{
-          path: '/',
+          path: '/image',
           routes: chats
         }}
         menuDataRender={(item) => {
@@ -332,63 +331,35 @@ function ChatPage() {
               <Select
                 size="middle"
                 style={{ width: '100%' }}
-                defaultValue={config.model}
-                value={config.model}
-                options={models.map((m) => ({ ...m, label: 'AI模型: ' + m.label }))}
+                value={model}
+                options={[{label: 'dall-e-3', value: 'dall-e-3'}]}
                 onChange={(e) => {
-                  changeConfig({
-                    ...config,
-                    model: e.toString()
-                  })
+                  setModel(e.toString());
                 }}
               />
-              
-              {/* <Space className={styles.space}>
-                <Button
-                  block
-                  onClick={() => {
-                    setRoleConfigModal({ open: true })
-                  }}
-                >
-                  AI提示指令
-                </Button>
-                <Button
-                  block
-                  onClick={() => {
-                    setPersonaModal({
-                      open: true
-                    })
-                  }}
-                >
-                  AI角色
-                </Button>
-              </Space>
-              <Button
-                block
-                onClick={() => {
-                  if (token) {
-                    setPluginModal({
-                      open: true
-                    })
-                  } else {
-                    setLoginModal(true)
-                  }
+              <Select
+                size="middle"
+                style={{ width: '100%' }}
+                value={size}
+                options={sizeOptions}
+                onChange={(e) => {
+                  setSize(e);
                 }}
-              >
-                智能插件
-              </Button>
-              <Button
-                block
-                onClick={() => {
-                  setConfigModal(true)
-                  // chatGptConfigform.setFieldsValue({
-                  //   ...config
-                  // })
-                  // setChatConfigModal({ open: true })
+              />
+               <Radio.Group style={{width: '100%'}} value={style} onChange={(v) => setStyle(v)}>
+                <Radio.Button value="vivid">生动</Radio.Button>
+                <Radio.Button value="natural">自然</Radio.Button>
+               </Radio.Group>
+              <Select
+                size="middle"
+                style={{ width: '100%' }}
+                value={type}
+                options={typeOptions.map(i => ({label: i, value: i}))}
+                onChange={(e) => {
+                  setType(e);
                 }}
-              >
-                会话配置
-              </Button> */}
+              />
+              {/* <Input addonBefore="宽度" value={} /> */}
               <Popconfirm
                 title="删除全部对话"
                 description="您确定删除全部会话对吗? "
@@ -430,7 +401,7 @@ function ChatPage() {
               {chatMessages.map((item) => {
                 return (
                   <ChatMessage
-                    key={item.dateTime + item.role + item.text}
+                    key={item.dateTime + item.role + item.url}
                     position={item.role === 'user' ? 'right' : 'left'}
                     status={item.status}
                     content={item.text}
@@ -482,37 +453,7 @@ function ChatPage() {
           </div>
         </div>
       </Layout>
-
-      {/* AI提示指令预设 */}
-      {/* <Modal
-        title="AI提示指令预设"
-        open={roleConfigModal.open}
-        footer={null}
-        destroyOnClose
-        onCancel={() => setRoleConfigModal({ open: false })}
-        width={800}
-        style={{
-          top: 50
-        }}
-      >
-        <Tabs
-          tabPosition={bodyResize.width <= 600 ? 'top' : 'left'}
-          items={[
-            {
-              key: 'roleLocal',
-              label: '本地数据',
-              children: <RoleLocal />
-            },
-            {
-              key: 'roleNetwork',
-              label: '网络数据',
-              children: <RoleNetwork />
-            }
-          ]}
-        />
-      </Modal> */}
-
-      {/* <PersonaModal
+      <PersonaModal
         {...personaModal}
         onCreateChat={(info) => {
           addChat({
@@ -528,16 +469,7 @@ function ChatPage() {
             open: false
           })
         }}
-      /> */}
-
-      {/* <PluginModal
-        {...pluginModal}
-        onCancel={() => {
-          setPluginModal({
-            open: false
-          })
-        }}
-      /> */}
+      />
     </div>
   )
 }

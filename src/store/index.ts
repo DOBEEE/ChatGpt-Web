@@ -5,5 +5,6 @@ import promptStore from './prompt/slice'
 import userStore from './user/slice'
 import shopStore from './shop/slice'
 import pluginStore from './plugin/slice'
+import imageStore from './image/slice'
 
-export { chatStore, shopStore, drawStore, configStore, promptStore, userStore, pluginStore }
+export { chatStore,imageStore, shopStore, drawStore, configStore, promptStore, userStore, pluginStore }
