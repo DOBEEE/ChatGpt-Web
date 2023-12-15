@@ -26,11 +26,12 @@ export interface userState {
   changeUserCurrentAmount: (amount?: number) => void
 }
 
-const userStore = create<userState>()(
+const userStore = create<any>()(
   persist(
     (set, get) => ({
       loginModal: false,
-      user_info: undefined,
+      tokens: undefined,
+      username: undefined,
       token: undefined,
       setLoginModal: (value) => set({ loginModal: value }),
       login: (data) => set(() => ({ ...data })),

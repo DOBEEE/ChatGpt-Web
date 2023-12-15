@@ -2,7 +2,7 @@ import React, { useEffect, useLayoutEffect, useMemo, useRef } from 'react'
 import { copyToClipboard, joinTrim } from '@/utils'
 import styles from './index.module.less'
 import OpenAiLogo from '@/components/OpenAiLogo'
-import { Space, Popconfirm,Image, message, Dropdown } from 'antd'
+import { Space, Popconfirm, message, Dropdown } from 'antd'
 
 import MarkdownIt from 'markdown-it'
 import mdKatex from '@traptitech/markdown-it-katex'
@@ -143,23 +143,14 @@ function ChatMessage({
         </div>
       )
     }
-    if (status === 'error') {
-      const renderMdHtml = mdi.render(value)
-      return (
-        <div
-          ref={markdownBodyRef}
-          className="markdown-body"
-          dangerouslySetInnerHTML={{
-            __html: renderMdHtml
-          }}
-        />
-      )
-    }
-    
+    const renderMdHtml = mdi.render(value)
     return (
-      <Image
-        width={200}
-        src={value}
+      <div
+        ref={markdownBodyRef}
+        className="markdown-body"
+        dangerouslySetInnerHTML={{
+          __html: renderMdHtml
+        }}
       />
     )
   }, [content, position])

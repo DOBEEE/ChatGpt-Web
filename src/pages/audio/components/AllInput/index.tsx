@@ -25,21 +25,20 @@ function AllInput(props: Props) {
   })
 
   const searchOptions = useMemo(() => {
-    return []
-    // if (prompt.startsWith('/')) {
-    //   return localPrompt
-    //     .filter((item: { key: string }) =>
-    //       item.key.toLowerCase().includes(prompt.substring(1).toLowerCase())
-    //     )
-    //     .map((obj) => {
-    //       return {
-    //         label: obj.key,
-    //         value: obj.value
-    //       }
-    //     })
-    // } else {
-    //   return []
-    // }
+    if (prompt.startsWith('/')) {
+      return localPrompt
+        .filter((item: { key: string }) =>
+          item.key.toLowerCase().includes(prompt.substring(1).toLowerCase())
+        )
+        .map((obj) => {
+          return {
+            label: obj.key,
+            value: obj.value
+          }
+        })
+    } else {
+      return []
+    }
   }, [prompt])
 
   // 保存聊天记录到图片
@@ -79,7 +78,12 @@ function AllInput(props: Props) {
       >
         <ClearOutlined />
       </div>
-      <AutoComplete
+      <div style={{padding: '0 20px'}}>
+        <Button type="primary" style={{width: '100%', height: 40}} onTouchEnd={stopRecording} onTouchStart={startRecording}>
+          {recording ? '停止说话' : '按下说话'}
+        </Button>
+      </div>
+      {/* <AutoComplete
         value={prompt}
         options={searchOptions}
         style={{
@@ -118,7 +122,7 @@ function AllInput(props: Props) {
             setPrompt(e.target.value)
           }}
         />
-      </AutoComplete>
+      </AutoComplete> */}
       {props.disabled ? (
         <Button
           className={styles.allInput_button}

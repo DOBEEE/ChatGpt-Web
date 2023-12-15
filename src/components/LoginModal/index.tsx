@@ -46,16 +46,16 @@ export function LoginCard(props: {
       logo="https://u1.dl0.cn/icon/openailogo.svg"
       title=""
       subTitle="基于大语言模型的AI对话产品"
-      actions={(
-        <div
-          style={{
-            textAlign: 'center',
-            fontSize: 14
-          }}
-        >
-          <p>登录即代表你同意 <a href="https://www.baidu.com/">《平台协议》</a>和<a href="https://www.baidu.com/">《隐私政策》</a> </p>
-        </div>
-      )}
+      // actions={(
+      //   <div
+      //     style={{
+      //       textAlign: 'center',
+      //       fontSize: 14
+      //     }}
+      //   >
+      //     <p>登录即代表你同意 <a href="https://www.baidu.com/">《平台协议》</a>和<a href="https://www.baidu.com/">《隐私政策》</a> </p>
+      //   </div>
+      // )}
       contentStyle={{
         width: '100%',
         maxWidth: '340px',
@@ -69,7 +69,7 @@ export function LoginCard(props: {
       onFinish={async (e) => {
         return new Promise((resolve, reject) => {
           userAsync
-            .fetchLogin({ ...e, invite_code: getQueryParam('invite_code') })
+            .fetchLogin({ ...e })
             .then((res) => {
               if (res.code) {
                 reject(false)
@@ -84,7 +84,7 @@ export function LoginCard(props: {
         })
       }}
     >
-      <Tabs
+      {/* <Tabs
         centered
         activeKey={loginTabsValue}
         onChange={(activeKey) => {
@@ -103,14 +103,14 @@ export function LoginCard(props: {
           //   label: '注册账户',
           // },
         ]}
-      />
+      /> */}
       <ProFormText
         fieldProps={{
           size: 'large',
           prefix: <UserOutlined />
         }}
-        name="account"
-        placeholder="电子邮箱/手机号码"
+        name="user"
+        placeholder="请输入账号"
         rules={[
           {
             required: true,
@@ -155,7 +155,7 @@ export function LoginCard(props: {
       {
         loginType !== 'code' && (
           <ProFormText.Password
-            name="password"
+            name="pwd"
             fieldProps={{
               size: 'large',
               prefix: <LockOutlined className={'prefixIcon'} />,
@@ -164,8 +164,8 @@ export function LoginCard(props: {
             rules={[
               {
                 required: true,
-                message: '8位及以上字母数字',
-                pattern: /^(?:[a-zA-Z]{8,}|\d{8,}|(?=.*\d)(?=.*[a-zA-Z])[a-zA-Z\d]{8,})$/
+                message: '6位及以上字母数字',
+                // pattern: /^(?:[a-zA-Z]{6,}|\d{6,}|(?=.*\d)(?=.*[a-zA-Z])[a-zA-Z\d]{6,})$/
               },
             ]}
           />
@@ -183,7 +183,7 @@ export function LoginCard(props: {
             </Button>
           )
         }
-        {
+        {/* {
           (loginTabsValue === 'login' && loginType === 'password') && (
             <Button type="link" onClick={() => {
               props.form.resetFields()
@@ -193,7 +193,7 @@ export function LoginCard(props: {
               验证码登录
             </Button>
           )
-        }
+        } */}
       </div>
       <div
         style={{

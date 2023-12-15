@@ -11,8 +11,6 @@ async function fetchChatMessages() {
 }
 
 async function fetchDelUserMessages(params: { id?: string | number; type: string }) {
-  const res = await delUserMessages({ parent_message_id: params.id })
-  if (!res.code) {
     if (params.type === 'clear' && params.id) {
       chatStore.getState().clearChatMessage(params.id)
     } else if (params.type === 'del' && params.id) {
@@ -20,8 +18,6 @@ async function fetchDelUserMessages(params: { id?: string | number; type: string
     } else if (params.type === 'delAll') {
       chatStore.getState().clearChats()
     }
-  }
-  return res
 }
 
 export default {

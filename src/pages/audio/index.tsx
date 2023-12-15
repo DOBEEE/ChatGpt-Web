@@ -252,87 +252,150 @@ function ChatPage() {
       assistantMessageId
     })
   }
+  const [recording, setRecording] = useState(false);
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorderRef.current = new MediaRecorder(stream);
+      mediaRecorderRef.current.start();
 
+      mediaRecorderRef.current.ondataavailable = (event) => {
+        audioChunksRef.current.push(event.data);
+      };
+
+      setRecording(true);
+    } catch (error) {
+      // console.error('Failed to start recording:', error);
+    }
+  };
+  
+  // 停止录制
+  const stopRecording = () => {
+    mediaRecorderRef.current.stop();
+
+    mediaRecorderRef.current.onstop = () => {
+      const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/mpeg' });
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new File([audioBlob], 'voice-recording.mp3', { type: 'audio/mpeg', lastModified: Date.now() });
+      // setAudioFile(audio);
+
+      // Reset the chunks for the next recording
+      audioChunksRef.current = [];
+
+      setRecording(false);
+      uploadAudio(audio);
+    };
+  };
+
+  // 上传音频文件
+  const uploadAudio = async (audioFile) => {
+    const formData = new FormData();
+    formData.append('file', audioFile, audioFile.name);
+
+    try {
+      // Replace this URL with your own upload API endpoint
+      const response = await fetch('YOUR_API_UPLOAD_ENDPOINT', {
+        method: 'POST',
+        body: formData,
+      });
+      if (response.ok) {
+        console.log('File successfully uploaded');
+      } else {
+        // console.error('Upload failed');
+      }
+    } catch (error) {
+      // console.error('Error uploading the file:', error);
+    }
+  };
+  const chatMessages = useMemo(() => {
+    const chatList = chats.filter((c) => c.id === selectChatId)
+    if (chatList.length <= 0) {
+      return []
+    }
+    return chatList[0].data
+  }, [selectChatId, chats])
   return (
     <div className={styles.chatPage}>
       <Layout
         menuExtraRender={() => <CreateChat />}
         route={{
-          path: '/image',
+          path: '/audio',
           routes: chats
         }}
         menuDataRender={(item) => {
           return item
         }}
-        menuItemRender={(item, dom) => (
-          <MessageItem
-            isSelect={item.id === selectChatId}
-            isPersona={!!item.persona_id}
-            name={item.name}
-            onConfirm={() => {
-              imageAsync.fetchDelUserMessages({ id: item.id, type: 'del' })
-            }}
-          />
-        )}
-        menuFooterRender={(props) => {
-          //   if (props?.collapsed) return undefined;
-          return (
-            <Space direction="vertical" style={{ width: '100%' }}>
-              <Select
-                size="middle"
-                style={{ width: '100%' }}
-                value={model}
-                options={[{label: 'dall-e-3', value: 'dall-e-3'}]}
-                onChange={(e) => {
-                  setModel(e.toString());
-                }}
-              />
-              <Select
-                size="middle"
-                style={{ width: '100%' }}
-                value={size}
-                options={sizeOptions}
-                onChange={(e) => {
-                  setSize(e);
-                }}
-              />
-               <Radio.Group style={{width: '100%'}} value={style} onChange={(v) => setStyle(v)}>
-                <Radio.Button style={{width: '50%'}} value="vivid">生动</Radio.Button>
-                <Radio.Button style={{width: '50%'}} value="natural">自然</Radio.Button>
-               </Radio.Group>
-              <Select
-                size="middle"
-                style={{ width: '100%' }}
-                value={type}
-                options={typeOptions.map(i => ({label: i, value: i}))}
-                onChange={(e) => {
-                  setType(e);
-                }}
-              />
-              {/* <Input addonBefore="宽度" value={} /> */}
-              <Popconfirm
-                title="删除全部对话"
-                description="您确定删除全部会话对吗? "
-                onConfirm={() => {
-                  if (token) {
-                    imageAsync.fetchDelUserMessages({ type: 'delAll' })
-                  } else {
-                    clearChats()
-                  }
-                }}
-                onCancel={() => {
-                  // ==== 无操作 ====
-                }}
-                okText="Yes"
-                cancelText="No"
-              >
-                <Button block danger type="dashed" ghost>
-                  清除所有对话
-                </Button>
-              </Popconfirm>
-            </Space>
-          )
-        }}
+        // menuItemRender={(item, dom) => (
+        //   <MessageItem
+        //     isSelect={item.id === selectChatId}
+        //     isPersona={!!item.persona_id}
+        //     name={item.name}
+        //     onConfirm={() => {
+        //       imageAsync.fetchDelUserMessages({ id: item.id, type: 'del' })
+        //     }}
+        //   />
+        // )}
+        // menuFooterRender={(props) => {
+        //   //   if (props?.collapsed) return undefined;
+        //   return (
+        //     <Space direction="vertical" style={{ width: '100%' }}>
+        //       <Select
+        //         size="middle"
+        //         style={{ width: '100%' }}
+        //         value={model}
+        //         options={[{label: 'dall-e-3', value: 'dall-e-3'}]}
+        //         onChange={(e) => {
+        //           setModel(e.toString());
+        //         }}
+        //       />
+        //       <Select
+        //         size="middle"
+        //         style={{ width: '100%' }}
+        //         value={size}
+        //         options={sizeOptions}
+        //         onChange={(e) => {
+        //           setSize(e);
+        //         }}
+        //       />
+        //        <Radio.Group style={{width: '100%'}} value={style} onChange={(v) => setStyle(v)}>
+        //         <Radio.Button style={{width: '50%'}} value="vivid">生动</Radio.Button>
+        //         <Radio.Button style={{width: '50%'}} value="natural">自然</Radio.Button>
+        //        </Radio.Group>
+        //       <Select
+        //         size="middle"
+        //         style={{ width: '100%' }}
+        //         value={type}
+        //         options={typeOptions.map(i => ({label: i, value: i}))}
+        //         onChange={(e) => {
+        //           setType(e);
+        //         }}
+        //       />
+        //       {/* <Input addonBefore="宽度" value={} /> */}
+        //       <Popconfirm
+        //         title="删除全部对话"
+        //         description="您确定删除全部会话对吗? "
+        //         onConfirm={() => {
+        //           if (token) {
+        //             imageAsync.fetchDelUserMessages({ type: 'delAll' })
+        //           } else {
+        //             clearChats()
+        //           }
+        //         }}
+        //         onCancel={() => {
+        //           // ==== 无操作 ====
+        //         }}
+        //         okText="Yes"
+        //         cancelText="No"
+        //       >
+        //         <Button block danger type="dashed" ghost>
+        //           清除所有对话
+        //         </Button>
+        //       </Popconfirm>
+        //     </Space>
+        //   )
+        // }}
         menuProps={{
           onClick: (r) => {
             const id = r.key.replace('/', '')

@@ -7,10 +7,10 @@ import {
 } from '@ant-design/icons'
 import { Button, Modal, Popconfirm, Space, Tabs, Select, message, Badge } from 'antd'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-
+import {aiCharts} from './config';
 import styles from './index.module.less'
 import { chatStore, configStore, userStore } from '@/store'
-import { chatAsync, pluginAsync } from '@/store/async'
+import { userAsync, chatAsync, pluginAsync } from '@/store/async'
 import RoleNetwork from './components/RoleNetwork'
 import RoleLocal from './components/RoleLocal'
 import AllInput from './components/AllInput'
@@ -31,7 +31,7 @@ function ChatPage() {
   const scrollRef = useRef<HTMLDivElement>(null)
   const { scrollToBottomIfAtBottom, scrollToBottom } = useScroll(scrollRef.current)
   const { token, setLoginModal } = userStore()
-  const [character, setCharacter]= useState('xxx');
+  const [character, setCharacter]= useState(aiCharts[0].prompt);
   const { config, models, changeConfig, setConfigModal } = configStore()
   const {
     chats,
@@ -72,8 +72,8 @@ function ChatPage() {
 
   useEffect(() => {
     if (token) {
-      chatAsync.fetchChatMessages()
-      pluginAsync.fetchGetPlugin()
+      // chatAsync.fetchChatMessages()
+      // pluginAsync.fetchGetPlugin()
     }
   }, [token])
 
@@ -104,6 +104,10 @@ function ChatPage() {
           //   })
           //   return
           // }
+          if (!token) {
+            setLoginModal(true);
+            return;
+          }
           addChat()
         }}
       >
@@ -139,7 +143,7 @@ function ChatPage() {
         // 终止： AbortError
         console.log(error.name)
       })
-    if (response?.data?.status != 0) {
+    if (!response?.success) {
       // 这里返回是错误 ...
       if (userMessageId) {
         setChatDataInfo(selectChatId, userMessageId, {
@@ -156,23 +160,6 @@ function ChatPage() {
       message.error('请求失败')
       return
     }
-    // if (!(response instanceof Response)) {
-    //   // 这里返回是错误 ...
-    //   if (userMessageId) {
-    //     setChatDataInfo(selectChatId, userMessageId, {
-    //       status: 'error'
-    //     })
-    //   }
-
-    //   setChatDataInfo(selectChatId, assistantMessageId, {
-    //     status: 'error',
-    //     text: `${response?.message || '❌ 请求异常，请稍后在尝试。'} \n \`\`\` ${JSON.stringify(response, null, 2)}   `
-    //   })
-    //   fetchController?.abort()
-    //   setFetchController(null)
-    //   message.error('请求失败')
-    //   return
-    // }
     setFetchController(null);
     if (userMessageId) {
       setChatDataInfo(selectChatId, userMessageId, {
@@ -180,83 +167,36 @@ function ChatPage() {
       })
     }
     setChatDataInfo(selectChatId, assistantMessageId, {
-      text: response?.data?.answer,
-      dateTime: response?.data?.time,
+      text: response?.answer,
+      dateTime: response?.timestamp,
       status: 'pass'
     })
-    // const reader = response.body?.getReader?.()
-    // let allContent = ''
-    // while (true) {
-    //   const { done, value } = (await reader?.read()) || {}
-    //   if (done) {
-    //     fetchController?.abort()
-    //     setFetchController(null)
-    //     break
-    //   }
-    //   // 将获取到的数据片段显示在屏幕上
-    //   const text = new TextDecoder('utf-8').decode(value)
-    //   const texts = handleChatData(text)
-    //   for (let i = 0; i < texts.length; i++) {
-    //     const { dateTime, role, content, segment, pluginInfo } = texts[i]
-    //     allContent += content ? content : ''
-    //     if (segment === 'stop') {
-    //       setFetchController(null)
-    //       if (userMessageId) {
-    //         setChatDataInfo(selectChatId, userMessageId, {
-    //           status: 'pass'
-    //         })
-    //       }
-    //       setChatDataInfo(selectChatId, assistantMessageId, {
-    //         text: allContent,
-    //         dateTime,
-    //         status: 'pass'
-    //       })
-    //       break
-    //     }
-
-    //     if (segment === 'start') {
-    //       if (userMessageId) {
-    //         setChatDataInfo(selectChatId, userMessageId, {
-    //           status: 'pass'
-    //         })
-    //       }
-    //       setChatDataInfo(selectChatId, assistantMessageId, {
-    //         text: allContent,
-    //         dateTime,
-    //         status: 'loading',
-    //         role,
-    //         requestOptions,
-    //         plugin_info: pluginInfo || undefined
-    //       })
-    //     }
-    //     if (segment === 'text') {
-    //       setChatDataInfo(selectChatId, assistantMessageId, {
-    //         text: allContent,
-    //         dateTime,
-    //         status: 'pass'
-    //       })
-    //     }
-    //   }
-      // scrollToBottomIfAtBottom()
-    // }
   }
 
   const [fetchController, setFetchController] = useState<AbortController | null>(null)
 
   // 对话
   async function sendChatCompletions(vaule: string, refurbishOptions?: ChatGpt) {
-    // if (!token) {
-    //   setLoginModal(true)
-    //   return
-    // }
+    if (!token) {
+      setLoginModal(true);
+      return;
+    }
     const selectChat = chats.filter((c) => c.id === selectChatId)[0]
     const parentMessageId = refurbishOptions?.requestOptions.parentMessageId || selectChat.id
     let userMessageId = generateUUID()
     const requestOptions = {
       chatid: selectChat?.persona_id || refurbishOptions?.persona_id || '',
       model: config.model,
-      message: vaule,
-      prompts: '你是一个段子手'
+      token,
+      // message: vaule,
+      prompts: character,
+      messages: [...chatMessages.slice(chatMessages.length - 3 < 0 ? 0 : chatMessages.length - 3).map(i => ({
+        role: i.role,
+        content: i.text
+      })), {
+        role: 'user',
+        content: vaule
+      }]
       // prompt: vaule,
       // parentMessageId,
       // persona_id: selectChat?.persona_id || refurbishOptions?.persona_id || '',
@@ -346,12 +286,8 @@ function ChatPage() {
               <Select
                 size="middle"
                 style={{ width: '100%' }}
-                defaultValue={'xxx'}
                 value={character}
-                options={[{
-                  label: '段子手',
-                  value: 'xxx'
-                }]}
+                options={aiCharts.map(i => ({label: i.act, value: i.prompt}))}
                 onChange={(e) => {
                   setCharacter(e.toString())
                 }}
@@ -452,10 +388,10 @@ function ChatPage() {
                 scrollToBottomIfAtBottom()
               }}
               clearMessage={() => {
-                if (token) {
-                  chatAsync.fetchDelUserMessages({ id: selectChatId, type: 'clear' })
+                if (!token) {
+                  setLoginModal(true);
                 } else {
-                  setLoginModal(true)
+                  chatAsync.fetchDelUserMessages({ id: selectChatId, type: 'clear' })
                 }
               }}
               onStopFetch={() => {
@@ -499,7 +435,7 @@ function ChatPage() {
         />
       </Modal> */}
 
-      <PersonaModal
+      {/* <PersonaModal
         {...personaModal}
         onCreateChat={(info) => {
           addChat({
@@ -515,7 +451,7 @@ function ChatPage() {
             open: false
           })
         }}
-      />
+      /> */}
 
       {/* <PluginModal
         {...pluginModal}

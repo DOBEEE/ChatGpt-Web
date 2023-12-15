@@ -4,6 +4,7 @@ import { chatStore, userStore } from '@/store'
 export type ResponseData<T> = {
   code: number
   data: T
+  success: boolean
   message: string
 }
 
@@ -67,12 +68,14 @@ const interceptorsRequest = (config: { url: string; options?: RequestInit }) => 
 // 响应拦截器
 const interceptorsResponse = async <T>(options: any, response: any): Promise<ResponseData<T>> => {
   console.log('响应拦截器：', options, response)
-  let data: ResponseData<T> = await response.json()
+  const data = await response.json()
+  // if (response.status !== 200) {
+  if (response.status === 401 || data?.code === 100) {
+    userStore.getState().logout()
+    userStore.getState().setLoginModal(true)
+    chatStore.getState().clearChats()
+  }
   if (response.status !== 200) {
-    if (response.status === 401 && data.code === 4001) {
-      userStore.getState().logout()
-      chatStore.getState().clearChats()
-    }
     notification.error({
       message: '错误',
       description: '网络请求错误',
@@ -81,11 +84,18 @@ const interceptorsResponse = async <T>(options: any, response: any): Promise<Res
         zIndex: 1011
       }
     })
+    throw new Error('网络请求错误')
   }
-  data = {
-    code: response.status === 200 ? 0 : response.status,
-    data: (data as any)?.data ? (data as any).data : data,
-    message: ''
+  if (!data?.success) {
+    notification.error({
+      message: '错误',
+      description: data?.message || '网络请求错误',
+      style: {
+        top: 60,
+        zIndex: 1011
+      }
+    })
+    throw new Error(data?.message || '网络请求错误')
   }
   return data
 }

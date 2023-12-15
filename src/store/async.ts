@@ -5,4 +5,5 @@ import shopAsync from './shop/async'
 import configAsync from './config/async'
 import personaAsync from './persona/async'
 import pluginAsync from './plugin/async'
-export { chatAsync, drawAsync, userAsync, shopAsync, configAsync, personaAsync, pluginAsync }
+import imageAsync from './image/async'
+export { chatAsync, imageAsync, drawAsync, userAsync, shopAsync, configAsync, personaAsync, pluginAsync }

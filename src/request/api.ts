@@ -29,12 +29,23 @@ export function getCode(params: { source: string }) {
 
 // 登录
 export function postLogin(params: RequestLoginParams) {
-  return request.post<ResponseLoginData>('/api/login', params)
+  return request.post<ResponseLoginData>('/api/login', params, {
+    'Content-Type': 'application/x-www-form-urlencoded'
+  })
+
+  return request.postStreams<ResponseLoginData>('/api/s_login', params, {headers: {
+    'Content-Type': 'application/x-www-form-urlencoded'
+  }})
 }
 
 // 获取用户信息
-export function getUserInfo() {
-  return request.get<UserInfo>('/api/user/info')
+export function getUserInfo(params) {
+  return request.get<UserInfo>('/api/userinfo', params)
+}
+
+// 获取用户信息
+export function getUserSession() {
+  return request.get<UserInfo>('/api/v1/user/session')
 }
 
 // 请求对话
@@ -68,7 +79,7 @@ export function postChatCompletion(
     options?: { [key: string]: any }
   }
 ) {
-  return request.postStreams<Response>('/api/chat/completion', params, config)
+  return request.postStreams<Response>('/api/v1/gpt/chat', params, config)
 }
 
 // 请求绘画

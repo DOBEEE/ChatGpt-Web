@@ -15,6 +15,7 @@ export interface RouteOptions extends Omit<Omit<RouteObject, 'children'>, 'index
 
 const ChatPage = React.lazy(() => import('@/pages/chat'))
 const DrawPage = React.lazy(() => import('@/pages/draw'))
+const AudioPage = React.lazy(() => import('@/pages/audio'))
 const ImagePage = React.lazy(() => import('@/pages/image'))
 const MappingPage = React.lazy(() => import('@/pages/mapping'))
 const ShopPage = React.lazy(() => import('@/pages/shop'))
@@ -56,15 +57,25 @@ export const webRouter: RouteOptions[] = [
     }
   },
   {
-    id: 'DrawPage',
-    path: '/draw',
-    element: <DrawPage />,
+    id: 'AudioPage',
+    path: '/audio',
+    element: <AudioPage />,
     children: [],
     configure: {
       verifToken: false,
       role: ['user', 'administrator']
     }
   },
+  // {
+  //   id: 'DrawPage',
+  //   path: '/draw',
+  //   element: <DrawPage />,
+  //   children: [],
+  //   configure: {
+  //     verifToken: false,
+  //     role: ['user', 'administrator']
+  //   }
+  // },
   {
     id: 'DrawPage',
     path: '/image',

@@ -22,7 +22,7 @@ import { fetchUserInfo } from '@/store/user/async'
 function HeaderRender(props: HeaderViewProps, defaultDom: React.ReactNode) {
   const navigate = useNavigate()
 
-  const { token, user_info, logout, setLoginModal } = userStore()
+  const { token, tokens, username, logout, setLoginModal } = userStore()
   const { clearChats } = chatStore()
 
   const renderLogo = useMemo(() => {
@@ -49,7 +49,7 @@ function HeaderRender(props: HeaderViewProps, defaultDom: React.ReactNode) {
       fetchUserInfo()
         .then((res) => {
           if (res.code) return
-          setBalance((b) => ({ ...b, number: res.data.integral, loading: false }))
+          setBalance((b) => ({ ...b, number: res?.tokens, loading: false }))
         })
         .finally(() => {
           setBalance((b) => ({ ...b, loading: false }))
@@ -87,30 +87,30 @@ function HeaderRender(props: HeaderViewProps, defaultDom: React.ReactNode) {
               trigger={['click']}
               menu={{
                 items: [
-                  {
-                    key: 'yonghuzhongxin',
-                    icon: <UserOutlined />,
-                    label: '用户中心',
-                    onClick: () => {
-                      navigate('/user')
-                    }
-                  },
-                  {
-                    key: 'wodeyue',
-                    icon: <PayCircleOutlined />,
-                    label: '我的余额',
-                    onClick: () => {
-                      navigate('/shop')
-                    }
-                  },
-                  {
-                    key: 'xiaofeijilu',
-                    icon: <ReconciliationOutlined />,
-                    label: '消费记录',
-                    onClick: () => {
-                      navigate('/shop')
-                    }
-                  },
+                  // {
+                  //   key: 'yonghuzhongxin',
+                  //   icon: <UserOutlined />,
+                  //   label: '用户中心',
+                  //   // onClick: () => {
+                  //   //   navigate('/user')
+                  //   // }
+                  // },
+                  // {
+                  //   key: 'wodeyue',
+                  //   icon: <PayCircleOutlined />,
+                  //   label: '我的余额',
+                  //   // onClick: () => {
+                  //   //   navigate('/shop')
+                  //   // }
+                  // },
+                  // {
+                  //   key: 'xiaofeijilu',
+                  //   icon: <ReconciliationOutlined />,
+                  //   label: '消费记录',
+                  //   onClick: () => {
+                  //     navigate('/shop')
+                  //   }
+                  // },
                   {
                     key: 'tuichudenglu',
                     icon: <LogoutOutlined />,
@@ -131,7 +131,7 @@ function HeaderRender(props: HeaderViewProps, defaultDom: React.ReactNode) {
                   justifyContent: 'center'
                 }}
               >
-                <Avatar src={user_info?.avatar} />
+                <Avatar icon={<UserOutlined />} />
                 {!props.isMobile && (
                   <span
                     style={{
@@ -140,7 +140,7 @@ function HeaderRender(props: HeaderViewProps, defaultDom: React.ReactNode) {
                       marginLeft: 4
                     }}
                   >
-                    {getEmailPre(user_info?.account)}
+                    {getEmailPre(username)}
                   </span>
                 )}
               </div>
@@ -161,7 +161,7 @@ function HeaderRender(props: HeaderViewProps, defaultDom: React.ReactNode) {
               setLoginModal(true)
             }}
           >
-            登录 / 注册
+            登录
           </Button>
         )}
         {props.isMobile && (

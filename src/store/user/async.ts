@@ -1,27 +1,38 @@
 import { RequestLoginParams, WithdrawalRecordInfo } from '@/types'
 import userStore from '../user/slice'
 import chatStore from '../chat/slice'
-import { getUserInfo, getUserRecords, postLogin, postUserWithdrawal, putUserPassword } from '@/request/api'
+import { getUserInfo, getUserSession, getUserRecords, postLogin, postUserWithdrawal, putUserPassword } from '@/request/api'
 
 // 登录
 export async function fetchLogin(params: RequestLoginParams) {
   const response = await postLogin(params)
-  if (!response.code) {
-    userStore.getState().login({ ...response.data })
+  if (response.success) {
+    userStore.getState().login({ token: response.token })
   }
   return response
 }
 
 // 获取用户信息
 export async function fetchUserInfo() {
-  const response = await getUserInfo()
+  const response = await getUserInfo({token: userStore.getState().token})
   if (!response.code) {
     userStore.getState().login({
       token: userStore.getState().token,
-      user_info: response.data
+      tokens: response?.tokens,
+      username: response?.user
     })
   }
   return response
+}
+
+// 校验session
+export async function fetchUserSession() {
+  const response = await getUserSession()
+  if (!response.success) {
+    userStore.getState().setLoginModal(true);
+   throw new Error('未登录！');
+  }
+  return true;
 }
 
 // 重置用户密码
@@ -58,5 +69,6 @@ export async function fetchUserWithdrawal(params: WithdrawalRecordInfo) {
 export default {
   fetchUserInfo,
   fetchLogin,
+  fetchUserSession,
   fetchUserPassword
 }
