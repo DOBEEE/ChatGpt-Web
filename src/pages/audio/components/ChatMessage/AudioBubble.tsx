@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './AudioBubble.css';
 
 const AudioBubble = ({ audioSrc, duration = '' }) => {
@@ -12,7 +12,6 @@ const AudioBubble = ({ audioSrc, duration = '' }) => {
       audioRef.current.play();
     }
   };
-
   const handlePlay = () => setPlaying(true);
   const handlePause = () => setPlaying(false);
   const handleEnded = () => setPlaying(false);

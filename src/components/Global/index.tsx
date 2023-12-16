@@ -1,4 +1,4 @@
-import { chatStore, configStore, imageStore } from '@/store'
+import { chatStore, configStore, imageStore, audioStore } from '@/store'
 import { configAsync } from '@/store/async'
 import { useEffect, useLayoutEffect } from 'react'
 import LoginModal from '../LoginModal'
@@ -14,6 +14,7 @@ type Props = {
 function Global(props: Props) {
   const { models, config, configModal, changeConfig, setConfigModal, notifications } = configStore()
   const { chats, addChat, changeSelectChatId } = chatStore()
+  const { chats: audioChats, addChat: addAudioChat, changeSelectChatId: changeAudioSelectChatId } = audioStore()
   const { chats: imgChats, addChat: addImageChat, changeSelectChatId: changeImgSelectChatId } = imageStore()
   const { token, loginModal, setLoginModal } = userStore()
 
@@ -68,6 +69,11 @@ function Global(props: Props) {
       addImageChat()
     } else {
       changeImgSelectChatId(imgChats[0].id)
+    }
+    if (audioChats.length <= 0) {
+      addAudioChat()
+    } else {
+      changeAudioSelectChatId(audioChats[0].id)
     }
 	// configAsync.fetchConfig()
   }, [])

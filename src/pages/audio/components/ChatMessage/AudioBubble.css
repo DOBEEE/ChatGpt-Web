@@ -10,7 +10,7 @@
   padding: 10px 20px;
   display: flex;
   align-items: center;
-  max-width: 60%;
+  /* max-width: 60%; */
 }
 
 .play-icon {

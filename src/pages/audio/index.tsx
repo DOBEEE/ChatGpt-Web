@@ -99,7 +99,6 @@ function ChatPage() {
       })
       
     if (!response?.success) {
-      const data = await response.json();
       // 这里返回是错误 ...
       if (userMessageId) {
         setChatDataInfo(selectChatId, userMessageId, {
@@ -149,10 +148,10 @@ function ChatPage() {
       prompts: character,
       messages: [...chatMessages.slice(chatMessages.length - 3 < 0 ? 0 : chatMessages.length - 3).map(i => ({
         role: i.role,
-        content: i.text
+        content: i.message
       })), {
         role: 'user',
-        content: vaule
+        content: '你好'
       }],
       url
       // quality: 'hd',
@@ -247,16 +246,16 @@ function ChatPage() {
 
   // 上传音频文件
   const uploadAudio = async (audioFile) => {
-      const response = await services.postAudioTransCompletion({token, voice: audioFile})
-      // Replace this URL with your own upload API endpoint
-      if (response.success && response.text) {
-        console.log('File successfully uploaded', response.text);
-        sendChatCompletions(response.text, response.url);
-        scrollToBottomIfAtBottom()
-      } else {
-        setFetchController(null);
-        message.error('语音识别失败')
-      }
+    sendChatCompletions('1', '2');
+    // const response = await services.postAudioTransCompletion({token, voice: audioFile})
+    // if (response.success && response.text) {
+    //   console.log('File successfully uploaded', response.text);
+    //   sendChatCompletions(response.text, response.url);
+    //   scrollToBottomIfAtBottom()
+    // } else {
+    //   setFetchController(null);
+    //   message.error('语音识别失败')
+    // }
   };
   const chatMessages = useMemo(() => {
     const chatList = chats.filter((c) => c.id === selectChatId)
@@ -329,7 +328,7 @@ function ChatPage() {
               {chatMessages.map((item, idx) => {
                 return (
                   <ChatMessage
-                    key={item.dateTime + item.role + item.dateTime}
+                    key={item.dateTime + item.role + item.text}
                     position={item.role === 'user' ? 'right' : 'left'}
                     status={item.status}
                     content={item.message}
