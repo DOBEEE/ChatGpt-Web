@@ -151,7 +151,7 @@ function ChatPage() {
         content: i.message
       })), {
         role: 'user',
-        content: '你好'
+        content: vaule
       }],
       url
       // quality: 'hd',
@@ -198,6 +198,7 @@ function ChatPage() {
   const mediaRecorderRef: any = useRef(null);
   const audioChunksRef = useRef([]);
   const startRecording = async () => {
+    console.log('start')
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaRecorderRef.current = new MediaRecorder(stream, {
@@ -210,7 +211,8 @@ function ChatPage() {
         audioChunksRef.current.push(event.data);
       };
     } catch (error) {
-      // console.error('Failed to start recording:', error);
+      console.log('Failed to start recording:', error);
+      message.error("唤起麦克风失败");
     }
   };
   
@@ -246,16 +248,16 @@ function ChatPage() {
 
   // 上传音频文件
   const uploadAudio = async (audioFile) => {
-    sendChatCompletions('1', '2');
-    // const response = await services.postAudioTransCompletion({token, voice: audioFile})
-    // if (response.success && response.text) {
-    //   console.log('File successfully uploaded', response.text);
-    //   sendChatCompletions(response.text, response.url);
-    //   scrollToBottomIfAtBottom()
-    // } else {
-    //   setFetchController(null);
-    //   message.error('语音识别失败')
-    // }
+    // sendChatCompletions('1', '2');
+    const response = await services.postAudioTransCompletion({token, voice: audioFile})
+    if (response.success && response.text) {
+      console.log('File successfully uploaded', response.text);
+      sendChatCompletions(response.text, response.url);
+      scrollToBottomIfAtBottom()
+    } else {
+      setFetchController(null);
+      message.error('语音识别失败')
+    }
   };
   const chatMessages = useMemo(() => {
     const chatList = chats.filter((c) => c.id === selectChatId)
@@ -353,7 +355,7 @@ function ChatPage() {
           <div
             className={styles.chatPage_container_two}
             style={{
-              position: isMobile ? 'fixed' : 'absolute'
+              position: 'absolute'
             }}
           >
             <AllInput

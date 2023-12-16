@@ -47,7 +47,15 @@ export function getUserInfo(params) {
 export function getUserSession() {
   return request.get<UserInfo>('/api/v1/user/session')
 }
-
+export function postChatCompletion(
+  params: RequestChatOptions,
+  config?: {
+    headers?: { [key: string]: any }
+    options?: { [key: string]: any }
+  }
+) {
+  return request.postStreams<Response>('/api/textchat', params, config, true)
+}
 // 请求对话
 export function postChatCompletions(
   params: RequestChatOptions,
