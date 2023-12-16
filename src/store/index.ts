@@ -6,5 +6,6 @@ import userStore from './user/slice'
 import shopStore from './shop/slice'
 import pluginStore from './plugin/slice'
 import imageStore from './image/slice'
+import audioStore from './audio/slice'
 
-export { chatStore,imageStore, shopStore, drawStore, configStore, promptStore, userStore, pluginStore }
+export { chatStore,imageStore, audioStore,shopStore, drawStore, configStore, promptStore, userStore, pluginStore }

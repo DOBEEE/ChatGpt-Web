@@ -1,11 +1,11 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
-import { ImgChatGpt, ImagesInfo } from '@/types'
+import { ChatGpt, ChatsInfo } from '@/types'
 import { formatTime, generateChatInfo } from '@/utils'
 
 export interface ChatState {
   // 聊天对话
-  chats: Array<ImagesInfo>
+  chats: Array<ChatsInfo>
   // 当前选择的会话id
   selectChatId: string | number
   // 新增一个对话
@@ -22,21 +22,21 @@ export interface ChatState {
   // 给对话添加数据
   setChatInfo: (
     id: string | number,
-    data?: ImgChatGpt,
-    info?: ImagesInfo | { [key: string]: any }
+    data?: ChatGpt,
+    info?: ChatsInfo | { [key: string]: any }
   ) => void
   // 修改对话数据
   setChatDataInfo: (
     id: string | number,
     messageId: string | number,
-    info?: ImgChatGpt | { [key: string]: any }
+    info?: ChatGpt | { [key: string]: any }
   ) => void
   // 清理当前会话
   clearChatMessage: (id: string | number) => void
   // 删除某条消息
   delChatMessage: (id: string | number, messageId: string | number) => void,
   // 重置
-  changeChatMessage: (data: Array<ImagesInfo>) => void
+  changeChatMessage: (data: Array<ChatsInfo>) => void
 }
 
 const chatStore = create<ChatState>()(
@@ -164,7 +164,7 @@ const chatStore = create<ChatState>()(
         })
     }),
     {
-      name: 'image_storage', // name of item in the storage (must be unique)
+      name: 'chat_storage', // name of item in the storage (must be unique)
       storage: createJSONStorage(() => localStorage) // (optional) by default the 'localStorage' is used
     }
   )

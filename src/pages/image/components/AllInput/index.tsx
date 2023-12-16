@@ -67,7 +67,7 @@ function AllInput(props: Props) {
           <CloudDownloadOutlined />
         </div>
       )}
-      <div
+      {/* <div
         className={styles.allInput_icon}
         onClick={() => {
           if (!props.disabled) {
@@ -78,7 +78,7 @@ function AllInput(props: Props) {
         }}
       >
         <ClearOutlined />
-      </div>
+      </div> */}
       <AutoComplete
         value={prompt}
         options={searchOptions}

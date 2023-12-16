@@ -9,9 +9,9 @@ function Reminder() {
   return (
     <div className={styles.reminder}>
       {website_logo && <img src={website_logo} className={styles.reminder_logo} />}
-      <h2 className={styles.reminder_title}>欢迎来到 {document.title}</h2>
+      <h2 className={styles.reminder_title}>欢迎来到 IR Chat 🚀</h2>
       <p className={styles.reminder_message}>
-        与AI智能聊天，畅想无限可能！基于先进的AI引擎，让你的交流更加智能、高效、便捷！
+        拥抱AI，体验智能、高效、便捷！
       </p>
       <p className={styles.reminder_message}>
         <span>Shift</span> + <span>Enter</span> 换行。开头输入 <span>/</span> 召唤 Prompt

@@ -56,7 +56,7 @@ export function postChatCompletions(
     options?: { [key: string]: any }
   }
 ) {
-  return request.postStreams<Response>('/api/textchat', params, config)
+  return request.postStreams<Response>('/api/textchat', params, config, true)
 }
 
 export function postImageCompletions(
@@ -66,20 +66,29 @@ export function postImageCompletions(
     options?: { [key: string]: any }
   }
 ) {
-  return request.postStreams<Response>('/api/imagechat', params, config)
+  return request.postStreams<Response>('/api/imagechat', params, config, true)
 }
 
-export function postChatCompletion(
+export function postAudioChatCompletion(
+  params,
+  config?: {
+    headers?: { [key: string]: any }
+    options?: { [key: string]: any }
+  }
+) {
+  return request.postStreams<Response>('/api/voicechat', params, config, true)
+}
+
+export function postAudioTransCompletion(
   params: {
-    prompt: string,
-    type?: string
+    voice: string,
   },
   config?: {
     headers?: { [key: string]: any }
     options?: { [key: string]: any }
   }
 ) {
-  return request.postStreams<Response>('/api/v1/gpt/chat', params, config)
+  return request.postStreams<Response>('/api/asr', params, config)
 }
 
 // 请求绘画

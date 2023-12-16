@@ -3,7 +3,7 @@ import { copyToClipboard, joinTrim } from '@/utils'
 import styles from './index.module.less'
 import OpenAiLogo from '@/components/OpenAiLogo'
 import { Space, Popconfirm, message, Dropdown } from 'antd'
-
+import AudioBubble from './AudioBubble'
 import MarkdownIt from 'markdown-it'
 import mdKatex from '@traptitech/markdown-it-katex'
 import mila from 'markdown-it-link-attributes'
@@ -55,6 +55,7 @@ function ChatMessage({
   status,
   time,
   model,
+  item,
   onDelChatMessage,
   onRefurbishChatMessage,
   pluginInfo
@@ -63,6 +64,7 @@ function ChatMessage({
   content?: string
   status: 'pass' | 'loading' | 'error' | string
   time: string
+  item: any
   model?: string
   onDelChatMessage?: () => void
   onRefurbishChatMessage?: () => void
@@ -136,23 +138,19 @@ function ChatMessage({
 
   const renderText = useMemo(() => {
     const value = content || ''
-    if (position === 'right') {
+    if (status === 'error' || position === 'right') {
       return (
         <div ref={markdownBodyRef} className="markdown-body">
           {value}
         </div>
       )
     }
-    const renderMdHtml = mdi.render(value)
     return (
-      <div
-        ref={markdownBodyRef}
-        className="markdown-body"
-        dangerouslySetInnerHTML={{
-          __html: renderMdHtml
-        }}
-      />
+      <div ref={markdownBodyRef}>
+        <AudioBubble audioSrc={value} duration={item.time} />
+      </div>
     )
+    
   }, [content, position])
 
   useLayoutEffect(() => {

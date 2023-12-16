@@ -7,13 +7,15 @@ import useDocumentResize from '@/hooks/useDocumentResize'
 import { htmlToImage } from '@/utils'
 
 type Props = {
-  onSend: (value: string) => void
   disabled?: boolean
   clearMessage?: () => void
   onStopFetch?: () => void
+  stopRecording: () => void
+  startRecording: () => void
 }
 
 function AllInput(props: Props) {
+  const {startRecording, stopRecording} = props;
   const [prompt, setPrompt] = useState('')
   const { localPrompt } = promptStore()
 
@@ -56,33 +58,6 @@ function AllInput(props: Props) {
 
   return (
     <div className={styles.allInput}>
-      {bodyResize.width > 800 && (
-        <div
-          className={styles.allInput_icon}
-          onClick={() => {
-            setDownloadModal((d) => ({ ...d, open: true }))
-          }}
-        >
-          <CloudDownloadOutlined />
-        </div>
-      )}
-      <div
-        className={styles.allInput_icon}
-        onClick={() => {
-          if (!props.disabled) {
-            props?.clearMessage?.()
-          } else {
-            message.warning('请结束回答后在操作')
-          }
-        }}
-      >
-        <ClearOutlined />
-      </div>
-      <div style={{padding: '0 20px'}}>
-        <Button type="primary" style={{width: '100%', height: 40}} onTouchEnd={stopRecording} onTouchStart={startRecording}>
-          {recording ? '停止说话' : '按下说话'}
-        </Button>
-      </div>
       {/* <AutoComplete
         value={prompt}
         options={searchOptions}
@@ -123,6 +98,7 @@ function AllInput(props: Props) {
           }}
         />
       </AutoComplete> */}
+      <div style={{width: '100%',padding: '0 20px'}}>
       {props.disabled ? (
         <Button
           className={styles.allInput_button}
@@ -131,6 +107,7 @@ function AllInput(props: Props) {
           ghost
           danger
           disabled={!props.disabled}
+          style={{width: '100%', height: 40}} 
           onClick={() => {
             props.onStopFetch?.()
           }}
@@ -138,19 +115,11 @@ function AllInput(props: Props) {
           <SyncOutlined spin /> 停止回答 🤚
         </Button>
       ) : (
-        <Button
-          className={styles.allInput_button}
-          type="primary"
-          size="large"
-          disabled={!prompt || props.disabled}
-          onClick={() => {
-            props?.onSend?.(prompt)
-            setPrompt('')
-          }}
-        >
-          发送
+        <Button type="primary" style={{width: '100%', height: 40}} onMouseDown={startRecording} onMouseUp={stopRecording} onTouchEnd={stopRecording} onTouchStart={startRecording}>
+          按下说话
         </Button>
       )}
+      </div>
 
       <Modal
         title="保存当前对话记录"

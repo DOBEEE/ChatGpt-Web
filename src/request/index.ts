@@ -66,35 +66,45 @@ const interceptorsRequest = (config: { url: string; options?: RequestInit }) => 
 }
 
 // 响应拦截器
-const interceptorsResponse = async <T>(options: any, response: any): Promise<ResponseData<T>> => {
+const interceptorsResponse = async <T>(options: any, response: any, unnotification = false): Promise<ResponseData<T>> => {
   console.log('响应拦截器：', options, response)
+  if (response.status !== 200) {
+    if (response.status === 401) {
+      userStore.getState().logout()
+      userStore.getState().setLoginModal(true)
+      chatStore.getState().clearChats()
+    } else {
+      notification.error({
+        message: '错误',
+        description: '网络请求错误',
+        style: {
+          top: 60,
+          zIndex: 1011
+        }
+      })
+      throw new Error('网络请求错误')
+    }
+  }
   const data = await response.json()
   // if (response.status !== 200) {
-  if (response.status === 401 || data?.code === 100) {
+  if (data?.code === 100) {
     userStore.getState().logout()
     userStore.getState().setLoginModal(true)
-    chatStore.getState().clearChats()
+    // chatStore.getState().clearChats()
   }
-  if (response.status !== 200) {
-    notification.error({
-      message: '错误',
-      description: '网络请求错误',
-      style: {
-        top: 60,
-        zIndex: 1011
-      }
-    })
-    throw new Error('网络请求错误')
-  }
+  
   if (!data?.success) {
-    notification.error({
-      message: '错误',
-      description: data?.message || '网络请求错误',
-      style: {
-        top: 60,
-        zIndex: 1011
-      }
-    })
+    if (!unnotification) {
+      notification.error({
+        message: '错误',
+        description: data?.message || '网络请求错误',
+        style: {
+          top: 60,
+          zIndex: 1011
+        }
+      })
+    }
+    
     throw new Error(data?.message || '网络请求错误')
   }
   return data
@@ -135,13 +145,12 @@ const request = <T>(
     ...options,
     headers: correctHeaders(options?.method, options?.headers)
   }
-
   // 导入请求拦截器
   options = interceptorsRequest({
     url,
     options
   })
-
+  
   // 超时处理
   const timeoutPromise = (timeout: number): Promise<ResponseData<any>> => {
     if (timeout <= 0) {
@@ -161,6 +170,7 @@ const request = <T>(
 
   // 发送请求
   const fetchPromise: Promise<ResponseData<T>> = new Promise((resolve, reject) => {
+    
     fetch(url, options)
       .then(async (res) => {
         const response = await interceptorsResponse<T>(
@@ -289,7 +299,8 @@ const postStreams = async <T>(
   o?: {
     headers?: HeadersInit
     options?: { [key: string]: any }
-  }
+  },
+  unnotification?: boolean
 ) => {
   const baseUrl = getBaseUrl(url)
   const options: { [key: string]: any } = interceptorsRequest({
@@ -302,20 +313,22 @@ const postStreams = async <T>(
     }
   })
   const response = await fetch(baseUrl, options)
-  if (
-    response.headers.has('Content-Type') &&
-    response.headers.get('Content-Type')?.includes('application/json')
-  ) {
-    const responseJson = await interceptorsResponse<T>(
-      {
-        url,
-        options
-      },
-      response
-    )
-    return responseJson
-  }
-  return response
+  const responseJson = await interceptorsResponse<T>(
+    {
+      url,
+      options
+    },
+    response,
+    unnotification
+  )
+  // if (
+  //   response.headers.has('Content-Type') &&
+  //   response.headers.get('Content-Type')?.includes('application/json')
+  // ) {
+    
+  //   return responseJson
+  // }
+  return responseJson
 }
 
 export default {

@@ -15,7 +15,7 @@ import RoleNetwork from './components/RoleNetwork'
 import RoleLocal from './components/RoleLocal'
 import AllInput from './components/AllInput'
 import ChatMessage from './components/ChatMessage'
-import { ChatGpt, RequestChatOptions } from '@/types'
+import { ChatGpt, ImgChatGpt, RequestChatOptions } from '@/types'
 import * as services from '@/request/api'
 import Reminder from '@/components/Reminder'
 import { filterObjectNull, formatTime, generateUUID, handleChatData } from '@/utils'
@@ -70,20 +70,6 @@ function ChatPage() {
   const [type, setType] = useState('默认');
   const [model, setModel] = useState('dall-e-3');
 
-  // 提示指令预设
-  const [roleConfigModal, setRoleConfigModal] = useState({
-    open: false
-  })
-
-  // ai角色
-  const [personaModal, setPersonaModal] = useState({
-    open: false
-  })
-
-  const [pluginModal, setPluginModal] = useState({
-    open: false
-  })
-
   useLayoutEffect(() => {
     if (scrollRef) {
       scrollToBottom()
@@ -118,7 +104,6 @@ function ChatPage() {
           marginRight: 0
         }}
         onClick={async () => {
-          await userAsync.fetchUserSession();
           // if (!token) {
           //   setLoginOptions({
           //     open: true
@@ -128,7 +113,7 @@ function ChatPage() {
           addChat()
         }}
       >
-        新建对话
+        新建绘图
       </Button>
     )
   }
@@ -158,11 +143,14 @@ function ChatPage() {
       })
       .catch((error) => {
         // 终止： AbortError
-        console.log(error.name)
       })
       
     if (!response?.success) {
-      const data = await response.json();
+      
+      fetchController?.abort()
+      setFetchController(null)
+      // message.error('请求失败')
+      // const data = await response.json();
       // 这里返回是错误 ...
       if (userMessageId) {
         setChatDataInfo(selectChatId, userMessageId, {
@@ -172,11 +160,9 @@ function ChatPage() {
       
       setChatDataInfo(selectChatId, assistantMessageId, {
         status: 'error',
-        text: `${data?.message || '❌ 请求异常，请稍后在尝试。'} \n \`\`\` ${JSON.stringify(response, null, 2)}   `
+        text: `${response?.message || '❌ 请求异常，请稍后在尝试。'}`
       })
-      fetchController?.abort()
-      setFetchController(null)
-      message.error('请求失败')
+      
       return
     }
     setFetchController(null);
@@ -195,7 +181,7 @@ function ChatPage() {
   const [fetchController, setFetchController] = useState<AbortController | null>(null)
 
   // 对话
-  async function sendChatCompletions(vaule: string, refurbishOptions?: ChatGpt) {
+  async function sendChatCompletions(vaule: string, refurbishOptions?: ImgChatGpt) {
     if (!token) {
       setLoginModal(true);
       return;
@@ -296,7 +282,7 @@ function ChatPage() {
                   setSize(e);
                 }}
               />
-               <Radio.Group style={{width: '100%'}} value={style} onChange={(v) => setStyle(v)}>
+               <Radio.Group style={{width: '100%'}} value={style} onChange={(v) => {setStyle(v.target.value)}}>
                 <Radio.Button style={{width: '50%'}} value="vivid">生动</Radio.Button>
                 <Radio.Button style={{width: '50%'}} value="natural">自然</Radio.Button>
                </Radio.Group>
@@ -310,7 +296,7 @@ function ChatPage() {
                 }}
               />
               {/* <Input addonBefore="宽度" value={} /> */}
-              <Popconfirm
+              {/* <Popconfirm
                 title="删除全部对话"
                 description="您确定删除全部会话对吗? "
                 onConfirm={() => {
@@ -329,7 +315,7 @@ function ChatPage() {
                 <Button block danger type="dashed" ghost>
                   清除所有对话
                 </Button>
-              </Popconfirm>
+              </Popconfirm> */}
             </Space>
           )
         }}
@@ -351,7 +337,7 @@ function ChatPage() {
               {chatMessages.map((item) => {
                 return (
                   <ChatMessage
-                    key={item.dateTime + item.role + item.url}
+                    key={item.dateTime + item.role + item.text}
                     position={item.role === 'user' ? 'right' : 'left'}
                     status={item.status}
                     content={item.text}
@@ -362,7 +348,7 @@ function ChatPage() {
                     }}
                     onRefurbishChatMessage={() => {
                       console.log(item)
-                      sendChatCompletions(item.requestOptions.prompt, item)
+                      sendChatCompletions(item.requestOptions.message, item)
                     }}
                     pluginInfo={item.plugin_info}
                   />

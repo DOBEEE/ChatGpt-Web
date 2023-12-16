@@ -72,7 +72,9 @@ function HeaderRender(props: HeaderViewProps, defaultDom: React.ReactNode) {
         {!props.isMobile && <h1>{props.title}</h1>}
       </div>
       {!props.isMobile && <MenuList />}
+      
       <div className={styles.header__actives}>
+      <div style={{padding: '0 20px', cursor: 'pointer'}} onClick={() => window.open('http://47.94.95.28:8808/tree?token=91509fb1f624169fd4ba709d2a16d9111fa3a509675b3519')}>代码平台</div>
         {token ? (
           <div
             style={{
@@ -117,7 +119,7 @@ function HeaderRender(props: HeaderViewProps, defaultDom: React.ReactNode) {
                     label: '退出登录',
                     onClick: () => {
                       logout()
-					  clearChats()
+					  // clearChats()
                       navigate('/login')
                     }
                   }

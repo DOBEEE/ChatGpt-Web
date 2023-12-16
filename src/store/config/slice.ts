@@ -37,10 +37,10 @@ const configStore = create<ConfigState>()(
       notifications: [],
       shop_introduce: '',
       user_introduce: '',
-      website_title: '',
+      website_title: 'IR Chat 🚀',
       website_description: '',
       website_keywords: '',
-      website_logo: '',
+      website_logo: 'http://irchat.yixinshe.vip/images/static/logo.svg',
       website_footer: '',
       invite_introduce: '',
 	  random_personas: [],
@@ -59,7 +59,7 @@ const configStore = create<ConfigState>()(
         }
       ],
       config: {
-        model: 'gpt-3.5-turbo-16k',
+        model: 'gpt-3.5-turbo',
         temperature: 0.8,
         presence_penalty: 0,
         frequency_penalty: 0,

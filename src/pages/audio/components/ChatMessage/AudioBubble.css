@@ -1,0 +1,23 @@
+.audio-bubble {
+  cursor: pointer;
+  display: inline-block;
+  margin: 5px;
+}
+
+.bubble {
+  background-color: #e5e5ea;
+  border-radius: 18px;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  max-width: 60%;
+}
+
+.play-icon {
+  margin-right: 10px;
+}
+
+.playing {
+  background-color: #007bff;
+  color: white;
+}

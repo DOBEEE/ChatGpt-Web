@@ -76,7 +76,22 @@ export interface PromptInfo {
 }
 
 export interface RequestChatOptions {
-  prompt: string
+  prompts: string
+  messages: Message[]
+  options?: Omit<ChatGptConfig, 'api' | 'api_key'>
+  parentMessageId?: string
+  userMessage: string
+}
+
+export interface RequestAudioOptions {
+  prompts: string
+  messages: Message[]
+  options?: Omit<ChatGptConfig, 'api' | 'api_key'>
+  parentMessageId?: string
+}
+
+export interface RequestImageChatOptions {
+  message: string
   options?: Omit<ChatGptConfig, 'api' | 'api_key'>
   parentMessageId?: string
 }
@@ -106,6 +121,13 @@ export interface ChatsInfo {
   persona_id?: string | number
   data: Array<ChatGpt>
 }
+export interface ImagesInfo {
+  path: string
+  id: string
+  name: string
+  persona_id?: string | number
+  data: Array<ImgChatGpt>
+}
 
 export interface ChatResultInfo {
   id: string
@@ -116,14 +138,32 @@ export interface ChatResultInfo {
 }
 
 // 对话记录
+interface Message {
+  role: string;
+  content: string;
+}
 export interface ChatGpt {
   id: string
   text: string
   dateTime: string
   status: 'pass' | 'loading' | 'error'
   role: 'assistant' | 'user' | string
+  
   persona_id?: string | number
   requestOptions: RequestChatOptions,
+  plugin_id?: string | number
+  plugin_info?: PluginInfo
+}
+
+export interface ImgChatGpt {
+  id: string
+  text: string
+  dateTime: string
+  status: 'pass' | 'loading' | 'error'
+  role: 'assistant' | 'user' | string
+  
+  persona_id?: string | number
+  requestOptions: RequestImageChatOptions,
   plugin_id?: string | number
   plugin_info?: PluginInfo
 }

@@ -1,110 +1,47 @@
-import {
-  CommentOutlined,
-  DeleteOutlined,
-  GitlabFilled,
-  RedditCircleFilled,
-  RedditSquareFilled
-} from '@ant-design/icons'
-import { Button, Modal,Radio, Popconfirm, Space, Tabs, Select, message, Badge } from 'antd'
+import { Button, Space, Select, message } from 'antd'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 
 import styles from './index.module.less'
-import { imageStore, configStore, userStore } from '@/store'
-import { userAsync, chatAsync, imageAsync } from '@/store/async'
-import RoleNetwork from './components/RoleNetwork'
-import RoleLocal from './components/RoleLocal'
+import { audioStore, userStore } from '@/store'
+import { userAsync, imageAsync } from '@/store/async'
 import AllInput from './components/AllInput'
 import ChatMessage from './components/ChatMessage'
-import { ChatGpt, RequestChatOptions } from '@/types'
+import { ChatGpt, RequestAudioOptions } from '@/types'
 import * as services from '@/request/api'
 import Reminder from '@/components/Reminder'
-import { filterObjectNull, formatTime, generateUUID, handleChatData } from '@/utils'
+import { formatTime, generateUUID } from '@/utils'
 import { useScroll } from '@/hooks/useScroll'
-import useDocumentResize from '@/hooks/useDocumentResize'
+// import useDocumentResize from '@/hooks/useDocumentResize'
 import Layout from '@/components/Layout'
 import useMobile from '@/hooks/useMobile'
-import PersonaModal from '@/components/PersonaModal'
-import PluginModal from '@/components/pluginModal'
 import MessageItem from './components/MessageItem'
+import {aiCharts} from './config';
 
-const typeOptions = ['默认', '中国画', '3D绘图', '素描画', '像素画', '油画', '水彩画', '印象主义',
-'木刻艺术', '涂抹油画', '立体像素艺术', '技术绘图', '新表现主义', '电致发光多边几何', '纸雕', '霓虹立体派', '水彩像素艺术', '涂抹木炭画', '剪纸轮廓', '涂抹中国水墨画', '动漫水彩', '3D 皮克斯风格卡通', '霓虹线描', '等距乐高', '彩饰手抄本'];
-const sizeOptions = [
-  {
-    label: '1024x1024',
-    value: '1024x1024'
-  },
-  {
-    label: '1792x1024',
-    value: '1792x1024'
-  },
-  {
-    label: '1024x1792',
-    value: '1024x1792'
-  },
-]
 function ChatPage() {
   const scrollRef = useRef<HTMLDivElement>(null)
   const { scrollToBottomIfAtBottom, scrollToBottom } = useScroll(scrollRef.current)
   const { token, setLoginModal } = userStore()
-  const { config, models, changeConfig, setConfigModal } = configStore()
   const {
     chats,
-    fetchUserSession,
     addChat,
-    delChat,
-    clearChats,
     selectChatId,
     changeSelectChatId,
     setChatInfo,
     setChatDataInfo,
-    clearChatMessage,
     delChatMessage
-  } = imageStore()
+  } = audioStore()
 
-  const bodyResize = useDocumentResize()
+  // const bodyResize = useDocumentResize()
 
   const isMobile = useMobile()
-  const [size, setSize] = useState('1024x1024');
-  const [style, setStyle] = useState('vivid');
-  const [type, setType] = useState('默认');
-  const [model, setModel] = useState('dall-e-3');
-
-  // 提示指令预设
-  const [roleConfigModal, setRoleConfigModal] = useState({
-    open: false
-  })
-
-  // ai角色
-  const [personaModal, setPersonaModal] = useState({
-    open: false
-  })
-
-  const [pluginModal, setPluginModal] = useState({
-    open: false
-  })
-
+  const [model, setModel] = useState('gpt-3.5-turbo');
+  const [character, setCharacter]= useState(aiCharts[0].prompt);
   useLayoutEffect(() => {
     if (scrollRef) {
       scrollToBottom()
     }
   }, [scrollRef.current, selectChatId, chats])
 
-  // useEffect(() => {
-  //   if (token) {
-  //     chatAsync.fetchChatMessages()
-  //     pluginAsync.fetchGetPlugin()
-  //   }
-  // }, [token])
-
-  // 当前聊天记录
-  const chatMessages = useMemo(() => {
-    const chatList = chats.filter((c) => c.id === selectChatId)
-    if (chatList.length <= 0) {
-      return []
-    }
-    return chatList[0].data
-  }, [selectChatId, chats])
 
   // 创建对话按钮
   const CreateChat = () => {
@@ -142,10 +79,10 @@ function ChatPage() {
   }: {
     userMessageId?: string
     signal: AbortSignal
-    requestOptions: RequestChatOptions
+    requestOptions: RequestAudioOptions
     assistantMessageId: string
   }) {
-    const response = await services.postImageCompletions(requestOptions, {
+    const response = await services.postAudioChatCompletion(requestOptions, {
       options: {
         // headers: {
         //   Authorization: 
@@ -172,7 +109,7 @@ function ChatPage() {
       
       setChatDataInfo(selectChatId, assistantMessageId, {
         status: 'error',
-        text: `${data?.message || '❌ 请求异常，请稍后在尝试。'} \n \`\`\` ${JSON.stringify(response, null, 2)}   `
+        message: `${data?.message || '❌ 请求异常，请稍后在尝试。'} \n \`\`\` ${JSON.stringify(response, null, 2)}   `
       })
       fetchController?.abort()
       setFetchController(null)
@@ -186,8 +123,10 @@ function ChatPage() {
       })
     }
     setChatDataInfo(selectChatId, assistantMessageId, {
-      text: response?.imgurl,
+      message: response?.avoice,
       dateTime: response?.timestamp,
+      text: response?.answer,
+      time: response?.avtime,
       status: 'pass'
     })
   }
@@ -195,22 +134,27 @@ function ChatPage() {
   const [fetchController, setFetchController] = useState<AbortController | null>(null)
 
   // 对话
-  async function sendChatCompletions(vaule: string, refurbishOptions?: ChatGpt) {
+  async function sendChatCompletions(vaule: string, url: string, refurbishOptions?: ChatGpt) {
     if (!token) {
       setLoginModal(true);
       return;
     }
-    const selectChat = chats.filter((c) => c.id === selectChatId)[0]
-    const parentMessageId = refurbishOptions?.requestOptions.parentMessageId || selectChat.id
+    // const selectChat = chats.filter((c) => c.id === selectChatId)[0]
+    // const parentMessageId = refurbishOptions?.requestOptions.parentMessageId || selectChat.id
     let userMessageId = generateUUID()
     const requestOptions = {
       token,
       chatid: selectChatId,
       model: model,
-      message: vaule,
-      imgtype: type,
-      imgstyle: style,
-      imgsize: size,
+      prompts: character,
+      messages: [...chatMessages.slice(chatMessages.length - 3 < 0 ? 0 : chatMessages.length - 3).map(i => ({
+        role: i.role,
+        content: i.text
+      })), {
+        role: 'user',
+        content: vaule
+      }],
+      url
       // quality: 'hd',
     }
     const assistantMessageId = refurbishOptions?.id || generateUUID()
@@ -219,14 +163,14 @@ function ChatPage() {
       setChatDataInfo(selectChatId, assistantMessageId, {
         status: 'loading',
         role: 'assistant',
-        text: '',
+        message: '',
         dateTime: formatTime(),
         requestOptions
       })
     } else {
       setChatInfo(selectChatId, {
         id: userMessageId,
-        text: vaule,
+        message: vaule,
         dateTime: formatTime(),
         status: 'pass',
         role: 'user',
@@ -234,7 +178,7 @@ function ChatPage() {
       })
       setChatInfo(selectChatId, {
         id: assistantMessageId,
-        text: '',
+        message: '',
         dateTime: formatTime(),
         status: 'loading',
         role: 'assistant',
@@ -252,20 +196,20 @@ function ChatPage() {
       assistantMessageId
     })
   }
-  const [recording, setRecording] = useState(false);
-  const mediaRecorderRef = useRef(null);
+  const mediaRecorderRef: any = useRef(null);
   const audioChunksRef = useRef([]);
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorderRef.current = new MediaRecorder(stream);
+      mediaRecorderRef.current = new MediaRecorder(stream, {
+        mimeType: 'audio/webm;codecs=opus',
+        audioBitsPerSecond: 16000
+      });
       mediaRecorderRef.current.start();
 
       mediaRecorderRef.current.ondataavailable = (event) => {
         audioChunksRef.current.push(event.data);
       };
-
-      setRecording(true);
     } catch (error) {
       // console.error('Failed to start recording:', error);
     }
@@ -273,41 +217,46 @@ function ChatPage() {
   
   // 停止录制
   const stopRecording = () => {
+    console.log(11223,'stop')
     mediaRecorderRef.current.stop();
 
     mediaRecorderRef.current.onstop = () => {
-      const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/mpeg' });
-      const audioUrl = URL.createObjectURL(audioBlob);
-      const audio = new File([audioBlob], 'voice-recording.mp3', { type: 'audio/mpeg', lastModified: Date.now() });
+      const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+      // const audioUrl = URL.createObjectURL(audioBlob);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        // FileReader完成读取后，result属性包含了一个data: URL，它是一个Base64编码的字符串
+        const base64AudioMessage = reader?.result?.split(',')[1]; // 获取Base64编码字符串
+
+        // 你可以在这里做任何你想要的事情，比如发送Base64编码的音频数据到服务器
+        // const audio = new File([audioBlob], 'voice-recording.mp3', { type: 'audio/mpeg', lastModified: Date.now() });
+        // console.log(audio);
+        uploadAudio(base64AudioMessage);
+      };
+
+      // 读取Blob对象为DataURL
+      reader.readAsDataURL(audioBlob);
+      
       // setAudioFile(audio);
 
       // Reset the chunks for the next recording
       audioChunksRef.current = [];
-
-      setRecording(false);
-      uploadAudio(audio);
+      
     };
   };
 
   // 上传音频文件
   const uploadAudio = async (audioFile) => {
-    const formData = new FormData();
-    formData.append('file', audioFile, audioFile.name);
-
-    try {
+      const response = await services.postAudioTransCompletion({token, voice: audioFile})
       // Replace this URL with your own upload API endpoint
-      const response = await fetch('YOUR_API_UPLOAD_ENDPOINT', {
-        method: 'POST',
-        body: formData,
-      });
-      if (response.ok) {
-        console.log('File successfully uploaded');
+      if (response.success && response.text) {
+        console.log('File successfully uploaded', response.text);
+        sendChatCompletions(response.text, response.url);
+        scrollToBottomIfAtBottom()
       } else {
-        // console.error('Upload failed');
+        setFetchController(null);
+        message.error('语音识别失败')
       }
-    } catch (error) {
-      // console.error('Error uploading the file:', error);
-    }
   };
   const chatMessages = useMemo(() => {
     const chatList = chats.filter((c) => c.id === selectChatId)
@@ -327,75 +276,41 @@ function ChatPage() {
         menuDataRender={(item) => {
           return item
         }}
-        // menuItemRender={(item, dom) => (
-        //   <MessageItem
-        //     isSelect={item.id === selectChatId}
-        //     isPersona={!!item.persona_id}
-        //     name={item.name}
-        //     onConfirm={() => {
-        //       imageAsync.fetchDelUserMessages({ id: item.id, type: 'del' })
-        //     }}
-        //   />
-        // )}
-        // menuFooterRender={(props) => {
-        //   //   if (props?.collapsed) return undefined;
-        //   return (
-        //     <Space direction="vertical" style={{ width: '100%' }}>
-        //       <Select
-        //         size="middle"
-        //         style={{ width: '100%' }}
-        //         value={model}
-        //         options={[{label: 'dall-e-3', value: 'dall-e-3'}]}
-        //         onChange={(e) => {
-        //           setModel(e.toString());
-        //         }}
-        //       />
-        //       <Select
-        //         size="middle"
-        //         style={{ width: '100%' }}
-        //         value={size}
-        //         options={sizeOptions}
-        //         onChange={(e) => {
-        //           setSize(e);
-        //         }}
-        //       />
-        //        <Radio.Group style={{width: '100%'}} value={style} onChange={(v) => setStyle(v)}>
-        //         <Radio.Button style={{width: '50%'}} value="vivid">生动</Radio.Button>
-        //         <Radio.Button style={{width: '50%'}} value="natural">自然</Radio.Button>
-        //        </Radio.Group>
-        //       <Select
-        //         size="middle"
-        //         style={{ width: '100%' }}
-        //         value={type}
-        //         options={typeOptions.map(i => ({label: i, value: i}))}
-        //         onChange={(e) => {
-        //           setType(e);
-        //         }}
-        //       />
-        //       {/* <Input addonBefore="宽度" value={} /> */}
-        //       <Popconfirm
-        //         title="删除全部对话"
-        //         description="您确定删除全部会话对吗? "
-        //         onConfirm={() => {
-        //           if (token) {
-        //             imageAsync.fetchDelUserMessages({ type: 'delAll' })
-        //           } else {
-        //             clearChats()
-        //           }
-        //         }}
-        //         onCancel={() => {
-        //           // ==== 无操作 ====
-        //         }}
-        //         okText="Yes"
-        //         cancelText="No"
-        //       >
-        //         <Button block danger type="dashed" ghost>
-        //           清除所有对话
-        //         </Button>
-        //       </Popconfirm>
-        //     </Space>
-        //   )
-        // }}
+        menuItemRender={(item, dom) => (
+          <MessageItem
+            isSelect={item.id === selectChatId}
+            isPersona={!!item.persona_id}
+            name={item.name}
+            onConfirm={() => {
+              imageAsync.fetchDelUserMessages({ id: item.id, type: 'del' })
+            }}
+          />
+        )}
+        menuFooterRender={(props) => {
+          //   if (props?.collapsed) return undefined;
+          return (
+            <Space direction="vertical" style={{ width: '100%' }}>
+              <Select
+                size="middle"
+                style={{ width: '100%' }}
+                value={model}
+                options={[{label: 'GPT-3.5', value: 'gpt-3.5-turbo'}]}
+                onChange={(e) => {
+                  setModel(e.toString());
+                }}
+              />
+              <Select
+                size="middle"
+                style={{ width: '100%' }}
+                value={character}
+                options={aiCharts.map(i => ({label: i.act, value: i.prompt}))}
+                onChange={(e) => {
+                  setCharacter(e.toString())
+                }}
+              />
+            </Space>
+          )
+        }}
         menuProps={{
           onClick: (r) => {
             const id = r.key.replace('/', '')
@@ -411,21 +326,22 @@ function ChatPage() {
           } */}
           <div ref={scrollRef} className={styles.chatPage_container_one}>
             <div id="image-wrapper">
-              {chatMessages.map((item) => {
+              {chatMessages.map((item, idx) => {
                 return (
                   <ChatMessage
-                    key={item.dateTime + item.role + item.url}
+                    key={item.dateTime + item.role + item.dateTime}
                     position={item.role === 'user' ? 'right' : 'left'}
                     status={item.status}
-                    content={item.text}
+                    content={item.message}
                     time={item.dateTime}
+                    item={item}
                     model={item.requestOptions.options?.model}
                     onDelChatMessage={() => {
                       delChatMessage(selectChatId, item.id)
                     }}
                     onRefurbishChatMessage={() => {
                       console.log(item)
-                      sendChatCompletions(item.requestOptions.prompt, item)
+                      sendChatCompletions(item.requestOptions.messages, item.requestOptions.url, item)
                     }}
                     pluginInfo={item.plugin_info}
                   />
@@ -443,11 +359,8 @@ function ChatPage() {
           >
             <AllInput
               disabled={!!fetchController}
-              onSend={(value) => {
-                if (value.startsWith('/')) return
-                sendChatCompletions(value)
-                scrollToBottomIfAtBottom()
-              }}
+              startRecording={startRecording}
+              stopRecording={stopRecording}
               clearMessage={() => {
                 if (token) {
                   imageAsync.fetchDelUserMessages({ id: selectChatId, type: 'clear' })

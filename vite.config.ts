@@ -32,7 +32,7 @@ export default defineConfig({
     port: 3001,
     proxy: {
       '/api': {
-        target: 'http://47.94.232.127:8089',	//实际请求地址
+        target: 'http://47.94.95.28:8085',	//实际请求地址
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '')
       },

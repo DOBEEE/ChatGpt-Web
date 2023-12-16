@@ -43,9 +43,9 @@ export function LoginCard(props: {
   return (
     <LoginForm<RequestLoginParams>
       form={props.form}
-      logo="https://u1.dl0.cn/icon/openailogo.svg"
+      logo="http://irchat.yixinshe.vip/images/static/logo.svg"
       title=""
-      subTitle="基于大语言模型的AI对话产品"
+      subTitle="IR Chat 🚀"
       // actions={(
       //   <div
       //     style={{

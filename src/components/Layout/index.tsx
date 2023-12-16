@@ -4,7 +4,16 @@ import { ChatsInfo } from '@/types'
 import React, { useEffect } from 'react'
 import { MenuProps } from 'antd'
 import { configStore } from '@/store'
-
+import {
+  CaretDownFilled,
+  DoubleRightOutlined,
+  GithubFilled,
+  InfoCircleFilled,
+  LogoutOutlined,
+  PlusCircleFilled,
+  QuestionCircleFilled,
+  SearchOutlined,
+} from '@ant-design/icons';
 type Props = {
   menuExtraRender?: () => React.ReactNode
   route?: {
@@ -28,7 +37,7 @@ type Props = {
 function Layout(props: Props) {
   const { menuExtraRender = () => <></>, menuItemRender = () => undefined } = props
 
-  const { website_logo, website_title, website_footer, website_description, website_keywords } =
+  const { website_title, website_footer, website_description, website_keywords } =
     configStore()
 
   function createMetaElement(key: string, value: string) {
@@ -46,11 +55,10 @@ function Layout(props: Props) {
     createMetaElement('description', website_description)
     createMetaElement('keywords', website_keywords)
   }, [])
-
   return (
     <ProLayout
-      title={website_title}
-      logo={website_logo}
+      title={'IR Chat 🚀'}
+      logo={'http://irchat.yixinshe.vip/images/static/logo.svg'}
       layout="mix"
       splitMenus={false}
       contentWidth="Fluid"

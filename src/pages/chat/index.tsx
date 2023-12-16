@@ -49,21 +49,6 @@ function ChatPage() {
   const bodyResize = useDocumentResize()
 
   const isMobile = useMobile()
-
-  // 提示指令预设
-  const [roleConfigModal, setRoleConfigModal] = useState({
-    open: false
-  })
-
-  // ai角色
-  const [personaModal, setPersonaModal] = useState({
-    open: false
-  })
-
-  const [pluginModal, setPluginModal] = useState({
-    open: false
-  })
-
   useLayoutEffect(() => {
     if (scrollRef) {
       scrollToBottom()
@@ -71,7 +56,8 @@ function ChatPage() {
   }, [scrollRef.current, selectChatId, chats])
 
   useEffect(() => {
-    if (token) {
+    if (!token) {
+      setLoginModal(true)
       // chatAsync.fetchChatMessages()
       // pluginAsync.fetchGetPlugin()
     }
@@ -153,7 +139,7 @@ function ChatPage() {
 
       setChatDataInfo(selectChatId, assistantMessageId, {
         status: 'error',
-        text: `${response?.message || '❌ 请求异常，请稍后在尝试。'} \n \`\`\` ${JSON.stringify(response, null, 2)}   `
+        text: `${response?.message || '❌ 请求异常，请稍后在尝试。'}`
       })
       fetchController?.abort()
       setFetchController(null)
@@ -188,6 +174,7 @@ function ChatPage() {
       chatid: selectChat?.persona_id || refurbishOptions?.persona_id || '',
       model: config.model,
       token,
+      userMessage: vaule,
       // message: vaule,
       prompts: character,
       messages: [...chatMessages.slice(chatMessages.length - 3 < 0 ? 0 : chatMessages.length - 3).map(i => ({
@@ -273,7 +260,7 @@ function ChatPage() {
               <Select
                 size="middle"
                 style={{ width: '100%' }}
-                defaultValue={config.model}
+                // defaultValue={config.model}
                 value={config.model}
                 options={models.map((m) => ({ ...m, label: 'AI模型: ' + m.label }))}
                 onChange={(e) => {
@@ -312,7 +299,7 @@ function ChatPage() {
                   AI角色
                 </Button>
               </Space> */}
-              <Popconfirm
+              {/* <Popconfirm
                 title="删除全部对话"
                 description="您确定删除全部会话对吗? "
                 onConfirm={() => {
@@ -331,7 +318,7 @@ function ChatPage() {
                 <Button block danger type="dashed" ghost>
                   清除所有对话
                 </Button>
-              </Popconfirm>
+              </Popconfirm> */}
             </Space>
           )
         }}
@@ -364,7 +351,7 @@ function ChatPage() {
                     }}
                     onRefurbishChatMessage={() => {
                       console.log(item)
-                      sendChatCompletions(item.requestOptions.prompt, item)
+                      sendChatCompletions(item.requestOptions.userMessage, item)
                     }}
                     pluginInfo={item.plugin_info}
                   />
@@ -405,62 +392,6 @@ function ChatPage() {
           </div>
         </div>
       </Layout>
-
-      {/* AI提示指令预设 */}
-      {/* <Modal
-        title="AI提示指令预设"
-        open={roleConfigModal.open}
-        footer={null}
-        destroyOnClose
-        onCancel={() => setRoleConfigModal({ open: false })}
-        width={800}
-        style={{
-          top: 50
-        }}
-      >
-        <Tabs
-          tabPosition={bodyResize.width <= 600 ? 'top' : 'left'}
-          items={[
-            {
-              key: 'roleLocal',
-              label: '本地数据',
-              children: <RoleLocal />
-            },
-            {
-              key: 'roleNetwork',
-              label: '网络数据',
-              children: <RoleNetwork />
-            }
-          ]}
-        />
-      </Modal> */}
-
-      {/* <PersonaModal
-        {...personaModal}
-        onCreateChat={(info) => {
-          addChat({
-            persona_id: info.id,
-            name: info.title
-          })
-          setPersonaModal({
-            open: false
-          })
-        }}
-        onCancel={() => {
-          setPersonaModal({
-            open: false
-          })
-        }}
-      /> */}
-
-      {/* <PluginModal
-        {...pluginModal}
-        onCancel={() => {
-          setPluginModal({
-            open: false
-          })
-        }}
-      /> */}
     </div>
   )
 }
