@@ -58,6 +58,12 @@ const web = [
     icon: <CommentOutlined />,
     message: '与智能AI进行对话交流'
   },
+  {
+    path: 'http://47.94.95.28:8808/tree?token=1b04dee89bdbba0c4bb7bbcade6b021a425660481b869c90',
+    name: '代码平台',
+    icon: <RadarChartOutlined />,
+    message: '代码平台'
+  },
   // {
   //   path: '/create',
   //   name: '创作',

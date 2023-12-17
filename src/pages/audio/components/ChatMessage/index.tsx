@@ -138,7 +138,7 @@ function ChatMessage({
 
   const renderText = useMemo(() => {
     const value = content || ''
-    if (status === 'error' || position === 'right') {
+    if (status === 'error') {
       return (
         <div ref={markdownBodyRef} className="markdown-body">
           {value}

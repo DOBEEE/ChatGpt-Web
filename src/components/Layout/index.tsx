@@ -58,7 +58,7 @@ function Layout(props: Props) {
   return (
     <ProLayout
       title={'IR Chat 🚀'}
-      logo={'http://irchat.yixinshe.vip/images/static/logo.svg'}
+      logo={'https://47.94.95.28/images/static/logo.svg'}
       layout="mix"
       splitMenus={false}
       contentWidth="Fluid"

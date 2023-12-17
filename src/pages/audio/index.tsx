@@ -1,6 +1,6 @@
 import { Button, Space, Select, message } from 'antd'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-
+import Recorder from 'js-audio-recorder';
 import styles from './index.module.less'
 import { audioStore, userStore } from '@/store'
 import { userAsync, imageAsync } from '@/store/async'
@@ -55,7 +55,7 @@ function ChatPage() {
           marginRight: 0
         }}
         onClick={async () => {
-          await userAsync.fetchUserSession();
+          // await userAsync.fetchUserSession();
           // if (!token) {
           //   setLoginOptions({
           //     open: true
@@ -131,9 +131,21 @@ function ChatPage() {
   }
 
   const [fetchController, setFetchController] = useState<AbortController | null>(null)
-
+//   const recorder = useRef();
+// useEffect(() => {
+//   recorder.current = new Recorder({
+//     // 采样位数，支持 8 或 16，默认是16
+//     sampleBits: 16,
+//     // 采样率，支持 11025、16000、22050、24000、44100、48000，根据浏览器默认值
+//     sampleRate: 16000,
+//     // 声道，支持 1 或 2， 默认是1
+//     numChannels: 1,
+//     // 是否边录边转换，默认是false
+//     compiling: false
+//   });
+// }, [])
   // 对话
-  async function sendChatCompletions(vaule: string, url: string, refurbishOptions?: ChatGpt) {
+  async function sendChatCompletions(res, refurbishOptions?: ChatGpt) {
     if (!token) {
       setLoginModal(true);
       return;
@@ -145,15 +157,17 @@ function ChatPage() {
       token,
       chatid: selectChatId,
       model: model,
-      prompts: character,
+      prompts: '',
       messages: [...chatMessages.slice(chatMessages.length - 3 < 0 ? 0 : chatMessages.length - 3).map(i => ({
         role: i.role,
         content: i.message
       })), {
         role: 'user',
-        content: vaule
+        content: res.text
       }],
-      url
+      text: res.text,
+      url: res.url,
+      avtime: res.avtime,
       // quality: 'hd',
     }
     const assistantMessageId = refurbishOptions?.id || generateUUID()
@@ -169,7 +183,8 @@ function ChatPage() {
     } else {
       setChatInfo(selectChatId, {
         id: userMessageId,
-        message: vaule,
+        message: res.url,
+        time: res.avtime,
         dateTime: formatTime(),
         status: 'pass',
         role: 'user',
@@ -197,10 +212,21 @@ function ChatPage() {
   }
   const mediaRecorderRef: any = useRef(null);
   const audioChunksRef = useRef([]);
+
   const startRecording = async () => {
     console.log('start')
     try {
+      // recorder.current.start().then(
+      //   () => {
+      //     // this.drawRecord()
+      //   },
+      //   error => {
+      //     // 出错了
+      //     console.log(`${error.name} : ${error.message}`)
+      //   }
+      // )
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // console.log(2222, stream)
       mediaRecorderRef.current = new MediaRecorder(stream, {
         mimeType: 'audio/webm;codecs=opus',
         audioBitsPerSecond: 16000
@@ -212,15 +238,30 @@ function ChatPage() {
       };
     } catch (error) {
       console.log('Failed to start recording:', error);
-      message.error("唤起麦克风失败");
+      message.error('唤起麦克风失败');
     }
   };
   
   // 停止录制
   const stopRecording = () => {
     console.log(11223,'stop')
+    // recorder.current.stop();
+    // const audioBlob = recorder.current.getPCMBlob()
     mediaRecorderRef.current.stop();
+    // const reader = new FileReader();
+    // reader.onloadend = () => {
+    //   // FileReader完成读取后，result属性包含了一个data: URL，它是一个Base64编码的字符串
+    //   const base64AudioMessage = reader?.result?.split(',')[1]; // 获取Base64编码字符串
 
+    //   // 你可以在这里做任何你想要的事情，比如发送Base64编码的音频数据到服务器
+    //   // const audio = new File([audioBlob], 'voice-recording.mp3', { type: 'audio/mpeg', lastModified: Date.now() });
+    //   // console.log(audio);
+    //   uploadAudio(base64AudioMessage);
+    // };
+
+    // // 读取Blob对象为DataURL
+    // reader.readAsDataURL(audioBlob);
+    
     mediaRecorderRef.current.onstop = () => {
       const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
       // const audioUrl = URL.createObjectURL(audioBlob);
@@ -252,7 +293,10 @@ function ChatPage() {
     const response = await services.postAudioTransCompletion({token, voice: audioFile})
     if (response.success && response.text) {
       console.log('File successfully uploaded', response.text);
-      sendChatCompletions(response.text, response.url);
+      sendChatCompletions({
+        text: response.text, 
+        url: response.url
+      });
       scrollToBottomIfAtBottom()
     } else {
       setFetchController(null);
@@ -300,7 +344,7 @@ function ChatPage() {
                   setModel(e.toString());
                 }}
               />
-              <Select
+              {/* <Select
                 size="middle"
                 style={{ width: '100%' }}
                 value={character}
@@ -308,7 +352,7 @@ function ChatPage() {
                 onChange={(e) => {
                   setCharacter(e.toString())
                 }}
-              />
+              /> */}
             </Space>
           )
         }}
@@ -342,20 +386,20 @@ function ChatPage() {
                     }}
                     onRefurbishChatMessage={() => {
                       console.log(item)
-                      sendChatCompletions(item.requestOptions.messages, item.requestOptions.url, item)
+                      sendChatCompletions(item.requestOptions, item)
                     }}
                     pluginInfo={item.plugin_info}
                   />
                 )
               })}
-              {chatMessages.length <= 0 && <Reminder />}
+              {chatMessages.length <= 0 && <Reminder from="audio"/>}
               <div style={{ height: 80 }} />
             </div>
           </div>
           <div
             className={styles.chatPage_container_two}
             style={{
-              position: 'absolute'
+              position: isMobile? 'fixed' : 'absolute'
             }}
           >
             <AllInput

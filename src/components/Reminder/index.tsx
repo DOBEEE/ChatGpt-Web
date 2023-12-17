@@ -2,7 +2,7 @@ import { chatStore, configStore } from '@/store'
 import styles from './index.module.less'
 import { Avatar } from 'antd'
 
-function Reminder() {
+function Reminder({from = ''}) {
   const { random_personas, website_logo } = configStore()
   const { addChat } = chatStore()
 
@@ -13,10 +13,10 @@ function Reminder() {
       <p className={styles.reminder_message}>
         拥抱AI，体验智能、高效、便捷！
       </p>
-      <p className={styles.reminder_message}>
+      {from != 'audio' &&<p className={styles.reminder_message}>
         <span>Shift</span> + <span>Enter</span> 换行。开头输入 <span>/</span> 召唤 Prompt
         AI提示指令预设。
-      </p>
+      </p>}
       <div className={styles.reminder_question}>
         {random_personas.map((item) => {
           return (

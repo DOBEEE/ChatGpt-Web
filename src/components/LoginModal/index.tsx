@@ -43,7 +43,7 @@ export function LoginCard(props: {
   return (
     <LoginForm<RequestLoginParams>
       form={props.form}
-      logo="http://irchat.yixinshe.vip/images/static/logo.svg"
+      logo="https://47.94.95.28/images/static/logo.svg"
       title=""
       subTitle="IR Chat 🚀"
       // actions={(

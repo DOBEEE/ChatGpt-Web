@@ -40,7 +40,7 @@ const configStore = create<ConfigState>()(
       website_title: 'IR Chat 🚀',
       website_description: '',
       website_keywords: '',
-      website_logo: 'http://irchat.yixinshe.vip/images/static/logo.svg',
+      website_logo: 'https://47.94.95.28/images/static/logo.svg',
       website_footer: '',
       invite_introduce: '',
 	  random_personas: [],
