@@ -105,7 +105,7 @@ const interceptorsResponse = async <T>(options: any, response: any, unnotificati
       })
     }
     
-    throw new Error(data?.message || '网络请求错误')
+    // throw new Error(data?.message || '网络请求错误')
   }
   return data
 }
@@ -129,7 +129,7 @@ const request = <T>(
   config?: RequestConfig
 ): Promise<ResponseData<T>> => {
   // 超时时间
-  const { timeout = 15000 } = config || {}
+  const { timeout = 60000 } = config || {}
   let timeoutId: string | number | NodeJS.Timeout | null | undefined = null
 
   if (typeof url !== 'string') throw new TypeError('url must be required and of string type!')

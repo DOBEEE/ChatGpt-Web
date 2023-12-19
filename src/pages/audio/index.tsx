@@ -15,7 +15,6 @@ import { useScroll } from '@/hooks/useScroll'
 import Layout from '@/components/Layout'
 import useMobile from '@/hooks/useMobile'
 import MessageItem from './components/MessageItem'
-import {aiCharts} from './config';
 
 function ChatPage() {
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -35,7 +34,7 @@ function ChatPage() {
 
   const isMobile = useMobile()
   const [model, setModel] = useState('gpt-3.5-turbo');
-  const [character, setCharacter]= useState(aiCharts[0].prompt);
+  // const [character, setCharacter]= useState(aiCharts[0].prompt);
   useLayoutEffect(() => {
     if (scrollRef) {
       scrollToBottom()
@@ -131,19 +130,7 @@ function ChatPage() {
   }
 
   const [fetchController, setFetchController] = useState<AbortController | null>(null)
-//   const recorder = useRef();
-// useEffect(() => {
-//   recorder.current = new Recorder({
-//     // 采样位数，支持 8 或 16，默认是16
-//     sampleBits: 16,
-//     // 采样率，支持 11025、16000、22050、24000、44100、48000，根据浏览器默认值
-//     sampleRate: 16000,
-//     // 声道，支持 1 或 2， 默认是1
-//     numChannels: 1,
-//     // 是否边录边转换，默认是false
-//     compiling: false
-//   });
-// }, [])
+
   // 对话
   async function sendChatCompletions(res, refurbishOptions?: ChatGpt) {
     if (!token) {
@@ -200,9 +187,9 @@ function ChatPage() {
       })
     }
 
-    const controller = new AbortController()
-    const signal = controller.signal
-    setFetchController(controller)
+    // const controller = new AbortController()
+    const signal = fetchController?.signal
+    // setFetchController(controller)
     serverChatCompletions({
       requestOptions,
       signal,
@@ -210,32 +197,44 @@ function ChatPage() {
       assistantMessageId
     })
   }
-  const mediaRecorderRef: any = useRef(null);
-  const audioChunksRef = useRef([]);
-
+  // const mediaRecorderRef: any = useRef(null);
+  // const audioChunksRef = useRef([]);
+  const recorder = useRef(null);
+  useEffect(() => {
+    recorder.current = new Recorder({
+      // 采样位数，支持 8 或 16，默认是16
+      sampleBits: 16,
+      // 采样率，支持 11025、16000、22050、24000、44100、48000，根据浏览器默认值
+      sampleRate: 16000,
+      // 声道，支持 1 或 2， 默认是1
+      numChannels: 1,
+      // 是否边录边转换，默认是false
+      compiling: false
+    });
+  }, [])
   const startRecording = async () => {
     console.log('start')
     try {
-      // recorder.current.start().then(
-      //   () => {
-      //     // this.drawRecord()
-      //   },
-      //   error => {
-      //     // 出错了
-      //     console.log(`${error.name} : ${error.message}`)
-      //   }
-      // )
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      // console.log(2222, stream)
-      mediaRecorderRef.current = new MediaRecorder(stream, {
-        mimeType: 'audio/webm;codecs=opus',
-        audioBitsPerSecond: 16000
-      });
-      mediaRecorderRef.current.start();
+      recorder.current.start().then(
+        () => {
+          // this.drawRecord()
+        },
+        error => {
+          // 出错了
+          console.log(`${error.name} : ${error.message}`)
+        }
+      )
+      // const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // // console.log(2222, stream)
+      // mediaRecorderRef.current = new MediaRecorder(stream, {
+      //   mimeType: 'audio/webm;codecs=opus',
+      //   audioBitsPerSecond: 16000
+      // });
+      // mediaRecorderRef.current.start();
 
-      mediaRecorderRef.current.ondataavailable = (event) => {
-        audioChunksRef.current.push(event.data);
-      };
+      // mediaRecorderRef.current.ondataavailable = (event) => {
+      //   audioChunksRef.current.push(event.data);
+      // };
     } catch (error) {
       console.log('Failed to start recording:', error);
       message.error('唤起麦克风失败');
@@ -245,62 +244,66 @@ function ChatPage() {
   // 停止录制
   const stopRecording = () => {
     console.log(11223,'stop')
-    // recorder.current.stop();
-    // const audioBlob = recorder.current.getPCMBlob()
-    mediaRecorderRef.current.stop();
-    // const reader = new FileReader();
-    // reader.onloadend = () => {
-    //   // FileReader完成读取后，result属性包含了一个data: URL，它是一个Base64编码的字符串
-    //   const base64AudioMessage = reader?.result?.split(',')[1]; // 获取Base64编码字符串
+    recorder.current.stop();
+    const audioBlob = recorder.current.getWAVBlob()
+    if (recorder.current.duration < 2) {
+      message.error('时间太短了~');
+      return;
+    }
+    // mediaRecorderRef.current.stop();
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      // FileReader完成读取后，result属性包含了一个data: URL，它是一个Base64编码的字符串
+      const base64AudioMessage = reader?.result?.split(',')[1]; // 获取Base64编码字符串
 
-    //   // 你可以在这里做任何你想要的事情，比如发送Base64编码的音频数据到服务器
-    //   // const audio = new File([audioBlob], 'voice-recording.mp3', { type: 'audio/mpeg', lastModified: Date.now() });
-    //   // console.log(audio);
-    //   uploadAudio(base64AudioMessage);
-    // };
+      uploadAudio(base64AudioMessage);
+    };
 
     // // 读取Blob对象为DataURL
-    // reader.readAsDataURL(audioBlob);
+    reader.readAsDataURL(audioBlob);
     
-    mediaRecorderRef.current.onstop = () => {
-      const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-      // const audioUrl = URL.createObjectURL(audioBlob);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        // FileReader完成读取后，result属性包含了一个data: URL，它是一个Base64编码的字符串
-        const base64AudioMessage = reader?.result?.split(',')[1]; // 获取Base64编码字符串
+    // mediaRecorderRef.current.onstop = () => {
+    //   const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+    //   // const audioUrl = URL.createObjectURL(audioBlob);
+    //   const reader = new FileReader();
+    //   reader.onloadend = () => {
+    //     // FileReader完成读取后，result属性包含了一个data: URL，它是一个Base64编码的字符串
+    //     const base64AudioMessage = reader?.result?.split(',')[1]; // 获取Base64编码字符串
 
-        // 你可以在这里做任何你想要的事情，比如发送Base64编码的音频数据到服务器
-        // const audio = new File([audioBlob], 'voice-recording.mp3', { type: 'audio/mpeg', lastModified: Date.now() });
-        // console.log(audio);
-        uploadAudio(base64AudioMessage);
-      };
+    //     // 你可以在这里做任何你想要的事情，比如发送Base64编码的音频数据到服务器
+    //     // const audio = new File([audioBlob], 'voice-recording.mp3', { type: 'audio/mpeg', lastModified: Date.now() });
+    //     // console.log(audio);
+    //     uploadAudio(base64AudioMessage);
+    //   };
 
-      // 读取Blob对象为DataURL
-      reader.readAsDataURL(audioBlob);
+    //   // 读取Blob对象为DataURL
+    //   reader.readAsDataURL(audioBlob);
       
-      // setAudioFile(audio);
+    //   // setAudioFile(audio);
 
-      // Reset the chunks for the next recording
-      audioChunksRef.current = [];
+    //   // Reset the chunks for the next recording
+    //   audioChunksRef.current = [];
       
-    };
+    // };
   };
 
   // 上传音频文件
   const uploadAudio = async (audioFile) => {
     // sendChatCompletions('1', '2');
+    const controller = new AbortController()
+    // const signal = controller.signal
+    setFetchController(controller)
     const response = await services.postAudioTransCompletion({token, voice: audioFile})
     if (response.success && response.text) {
       console.log('File successfully uploaded', response.text);
       sendChatCompletions({
-        text: response.text, 
+        text: response.text,
         url: response.url
       });
       scrollToBottomIfAtBottom()
     } else {
       setFetchController(null);
-      message.error('语音识别失败')
+      message.error('IR 没听清，请重述一下')
     }
   };
   const chatMessages = useMemo(() => {
@@ -392,7 +395,7 @@ function ChatPage() {
                   />
                 )
               })}
-              {chatMessages.length <= 0 && <Reminder from="audio"/>}
+              {chatMessages.length <= 0 && <Reminder from="audio" />}
               <div style={{ height: 80 }} />
             </div>
           </div>

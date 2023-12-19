@@ -5,7 +5,7 @@ import { useMemo, useState } from 'react'
 import { promptStore } from '@/store'
 import useDocumentResize from '@/hooks/useDocumentResize'
 import { htmlToImage } from '@/utils'
-
+import promptsImage from '@/assets/prompts-image.json';
 type Props = {
   onSend: (value: string) => void
   disabled?: boolean
@@ -25,21 +25,20 @@ function AllInput(props: Props) {
   })
 
   const searchOptions = useMemo(() => {
-    return []
-    // if (prompt.startsWith('/')) {
-    //   return localPrompt
-    //     .filter((item: { key: string }) =>
-    //       item.key.toLowerCase().includes(prompt.substring(1).toLowerCase())
-    //     )
-    //     .map((obj) => {
-    //       return {
-    //         label: obj.key,
-    //         value: obj.value
-    //       }
-    //     })
-    // } else {
-    //   return []
-    // }
+    if (prompt.startsWith('/')) {
+      return promptsImage
+        .filter((item: { key: string }) =>
+          item.key.toLowerCase().includes(prompt.substring(1).toLowerCase())
+        )
+        .map((obj) => {
+          return {
+            label: obj.key,
+            value: obj.value
+          }
+        })
+    } else {
+      return []
+    }
   }, [prompt])
 
   // 保存聊天记录到图片
