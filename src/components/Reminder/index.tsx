@@ -13,10 +13,12 @@ function Reminder({from = ''}) {
       <p className={styles.reminder_message}>
         拥抱AI，体验智能、高效、便捷！
       </p>
-      {from != 'audio' &&<p className={styles.reminder_message}>
+      {from != 'audio' &&(
+<p className={styles.reminder_message}>
         <span>Shift</span> + <span>Enter</span> 换行。开头输入 <span>/</span> 召唤 Prompt
         AI提示指令预设。
-      </p>}
+</p>
+)}
       <div className={styles.reminder_question}>
         {random_personas.map((item) => {
           return (
