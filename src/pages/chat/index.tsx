@@ -146,6 +146,62 @@ function ChatPage() {
       message.error('请求失败')
       return
     }
+
+    // const reader = response.body?.getReader?.()
+    // let alltext = ''
+    // while (true) {
+    //   const { done, value } = (await reader?.read()) || {}
+    //   if (done) {
+    //     setFetchController(null);
+    //     break
+    //   }
+    //   // 将获取到的数据片段显示在屏幕上
+    //   const text = new TextDecoder('utf-8').decode(value)
+    //   const texts = handleChatData(text)
+    //   for (let i = 0; i < texts.length; i++) {
+    //     const { id, dateTime, parentMessageId, role, text, segment } = texts[i]
+    //     alltext += text
+    //     if (segment === 'start') {
+    //       setChatDataInfo(selectChatId, userMessageId, {
+    //         status: 'pass'
+    //       })
+    //       setChatInfo(
+    //         selectChatId,
+    //         {
+    //           parentMessageId
+    //         },
+    //         {
+    //           id,
+    //           text: alltext,
+    //           dateTime,
+    //           status: 'loading',
+    //           role,
+    //           requestOptions
+    //         }
+    //       )
+    //     }
+    //     if (segment === 'text') {
+    //       setChatDataInfo(selectChatId, id, {
+    //         text: alltext,
+    //         dateTime,
+    //         status: 'pass'
+    //       })
+    //     }
+    //     if (segment === 'stop') {
+    //       setFetchController(null);
+    //       setChatDataInfo(selectChatId, userMessageId, {
+    //         status: 'pass'
+    //       })
+    //       setChatDataInfo(selectChatId, id, {
+    //         text: alltext,
+    //         dateTime,
+    //         status: 'pass'
+    //       })
+    //     }
+    //   }
+    //   scrollToBottomIfAtBottom()
+    // }
+
     setFetchController(null);
     if (userMessageId) {
       setChatDataInfo(selectChatId, userMessageId, {
