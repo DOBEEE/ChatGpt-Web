@@ -1,5 +1,5 @@
 export function handleChatData(text: string) {
-  const lines = text.split('\n\n')
+  const lines = text.split('\x01\x01')
   const data = []
   const parseErrors = []
 
@@ -7,21 +7,29 @@ export function handleChatData(text: string) {
     return (
       typeof data === 'object' &&
       data !== null &&
-      typeof data.dateTime === 'string' &&
-      data.dateTime.trim() !== ''
+      typeof data.answer === 'string' &&
+      data.answer.trim() !== ''
     )
   }
 
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim()
+    const line = lines[i]
 
     if (line !== '') {
       try {
-        const parsedData = JSON.parse(line)
-
+        console.log('line', line)
+        const cache = line.split('\0\0');
+        const parsedData = {
+          success: cache[0],
+          code: cache[1],
+          message: cache[2],
+          answer: cache[3],
+          segment: cache[4],
+          timestamp: cache[5],
+        };
+        console.log('line2', parsedData)
         if (isValidData(parsedData)) {
-          const { dateTime, ...otherProps } = parsedData
-          data.push({ dateTime, ...otherProps })
+          data.push({ ...parsedData })
         } else {
           parseErrors.push(line)
         }

@@ -66,6 +66,15 @@ export function postChatCompletions(
 ) {
   return request.postStreams<Response>('/api/textchat', params, config, true)
 }
+export function postChatStreamCompletions(
+  params: RequestChatOptions,
+  config?: {
+    headers?: { [key: string]: any }
+    options?: { [key: string]: any }
+  }
+) {
+  return request.postStream<Response>('/api/textchatstream', params, config, true)
+}
 
 export function postImageCompletions(
   params: RequestChatOptions,

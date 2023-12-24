@@ -292,7 +292,43 @@ const del = <T = unknown>(
     config
   )
 }
-
+const postStream = async <T>(
+  url: string,
+  data?: { [key: string]: any } | string | any,
+  o?: {
+    headers?: HeadersInit
+    options?: { [key: string]: any }
+  },
+  unnotification?: boolean
+) => {
+  const baseUrl = getBaseUrl(url)
+  const options: { [key: string]: any } = interceptorsRequest({
+    url,
+    options: {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: correctHeaders('POST', o?.headers),
+      ...o?.options
+    }
+  })
+  const response = await fetch(baseUrl, options)
+  
+  if (
+    response.headers.has('Content-Type') &&
+    response.headers.get('Content-Type')?.includes('application/json')
+  ) {
+    const responseJson = await interceptorsResponse<T>(
+      {
+        url,
+        options
+      },
+      response,
+      unnotification
+    )
+    return responseJson
+  }
+  return response
+}
 const postStreams = async <T>(
   url: string,
   data?: { [key: string]: any } | string | any,
@@ -336,5 +372,6 @@ export default {
   post,
   put,
   del,
-  postStreams
+  postStreams,
+  postStream
 }

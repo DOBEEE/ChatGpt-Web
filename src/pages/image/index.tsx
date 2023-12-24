@@ -348,7 +348,7 @@ function ChatPage() {
                     }}
                     onRefurbishChatMessage={() => {
                       console.log(item)
-                      sendChatCompletions(item.requestOptions.message, item)
+                      sendChatCompletions(item.requestOptions.message, {...item, id: ''})
                     }}
                     pluginInfo={item.plugin_info}
                   />

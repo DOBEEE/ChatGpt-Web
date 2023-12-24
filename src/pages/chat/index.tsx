@@ -31,6 +31,7 @@ function ChatPage() {
   const scrollRef = useRef<HTMLDivElement>(null)
   const { scrollToBottomIfAtBottom, scrollToBottom } = useScroll(scrollRef.current)
   const { token, setLoginModal } = userStore()
+  const [ currentId, setCurrentId ] = useState(null)
   const [character, setCharacter]= useState(aiCharts[0].prompt);
   const { config, models, changeConfig, setConfigModal } = configStore()
   const {
@@ -114,7 +115,8 @@ function ChatPage() {
     requestOptions: RequestChatOptions
     assistantMessageId: string
   }) {
-    const response = await services.postChatCompletions(requestOptions, {
+    setCurrentId(assistantMessageId);
+    const response = await services.postChatStreamCompletions(requestOptions, {
       options: {
         // headers: {
         //   Authorization: 
@@ -129,6 +131,71 @@ function ChatPage() {
         // 终止： AbortError
         console.log(error.name)
       })
+    
+    // if (requestOptions.model === 'gpt-4') {
+      const reader = response.body?.getReader?.()
+      let alltext = ''
+      while (true) {
+        const { done, value } = (await reader?.read()) || {}
+        if (done) {
+          setFetchController(null);
+          break
+        }
+        // 将获取到的数据片段显示在屏幕上
+        const text = new TextDecoder('utf-8').decode(value)
+        const texts = handleChatData(text)
+        console.log(111,alltext, text);
+        for (let i = 0; i < texts.length; i++) {
+          const { timestamp, parentMessageId, answer, segment } = texts[i];
+          console.log('answer', `${answer}`)
+          alltext += answer;
+          if (segment === 'start') {
+            if (userMessageId) {
+              setChatDataInfo(selectChatId, userMessageId, {
+                status: 'pass'
+              })
+            }
+            setChatInfo(
+              selectChatId,
+              {
+                // parentMessageId
+              },
+              {
+                id: assistantMessageId,
+                text: alltext,
+                dateTime: timestamp,
+                status: 'loading',
+                // role,
+                requestOptions
+              }
+            )
+          }
+          if (segment === 'text') {
+            setChatDataInfo(selectChatId, assistantMessageId, {
+              text: alltext,
+              dateTime: timestamp,
+              status: 'pass'
+            })
+          }
+          if (segment === 'stop') {
+            setFetchController(null);
+            if (userMessageId) {
+              setChatDataInfo(selectChatId, userMessageId, {
+                status: 'pass'
+              })
+            }
+            setChatDataInfo(selectChatId, assistantMessageId, {
+              text: alltext,
+              dateTime: timestamp,
+              status: 'pass'
+            })
+          }
+        }
+        scrollToBottomIfAtBottom()
+      }
+      return;
+    // }
+    
     if (!response?.success) {
       // 这里返回是错误 ...
       if (userMessageId) {
@@ -146,62 +213,6 @@ function ChatPage() {
       message.error('请求失败')
       return
     }
-
-    // const reader = response.body?.getReader?.()
-    // let alltext = ''
-    // while (true) {
-    //   const { done, value } = (await reader?.read()) || {}
-    //   if (done) {
-    //     setFetchController(null);
-    //     break
-    //   }
-    //   // 将获取到的数据片段显示在屏幕上
-    //   const text = new TextDecoder('utf-8').decode(value)
-    //   const texts = handleChatData(text)
-    //   for (let i = 0; i < texts.length; i++) {
-    //     const { id, dateTime, parentMessageId, role, text, segment } = texts[i]
-    //     alltext += text
-    //     if (segment === 'start') {
-    //       setChatDataInfo(selectChatId, userMessageId, {
-    //         status: 'pass'
-    //       })
-    //       setChatInfo(
-    //         selectChatId,
-    //         {
-    //           parentMessageId
-    //         },
-    //         {
-    //           id,
-    //           text: alltext,
-    //           dateTime,
-    //           status: 'loading',
-    //           role,
-    //           requestOptions
-    //         }
-    //       )
-    //     }
-    //     if (segment === 'text') {
-    //       setChatDataInfo(selectChatId, id, {
-    //         text: alltext,
-    //         dateTime,
-    //         status: 'pass'
-    //       })
-    //     }
-    //     if (segment === 'stop') {
-    //       setFetchController(null);
-    //       setChatDataInfo(selectChatId, userMessageId, {
-    //         status: 'pass'
-    //       })
-    //       setChatDataInfo(selectChatId, id, {
-    //         text: alltext,
-    //         dateTime,
-    //         status: 'pass'
-    //       })
-    //     }
-    //   }
-    //   scrollToBottomIfAtBottom()
-    // }
-
     setFetchController(null);
     if (userMessageId) {
       setChatDataInfo(selectChatId, userMessageId, {
@@ -227,7 +238,7 @@ function ChatPage() {
     const parentMessageId = refurbishOptions?.requestOptions.parentMessageId || selectChat.id
     let userMessageId = generateUUID()
     const requestOptions = {
-      chatid: selectChat?.persona_id || refurbishOptions?.persona_id || '',
+      chatid: selectChatId,
       model: config.model,
       token,
       userMessage: vaule,
@@ -335,46 +346,6 @@ function ChatPage() {
                   setCharacter(e.toString())
                 }}
               />
-              {/* <Space className={styles.space}>
-                <Button
-                  block
-                  onClick={() => {
-                    setRoleConfigModal({ open: true })
-                  }}
-                >
-                  AI提示指令
-                </Button>
-                <Button
-                  block
-                  onClick={() => {
-                    setPersonaModal({
-                      open: true
-                    })
-                  }}
-                >
-                  AI角色
-                </Button>
-              </Space> */}
-              {/* <Popconfirm
-                title="删除全部对话"
-                description="您确定删除全部会话对吗? "
-                onConfirm={() => {
-                  if (token) {
-                    chatAsync.fetchDelUserMessages({ type: 'delAll' })
-                  } else {
-                    clearChats()
-                  }
-                }}
-                onCancel={() => {
-                  // ==== 无操作 ====
-                }}
-                okText="Yes"
-                cancelText="No"
-              >
-                <Button block danger type="dashed" ghost>
-                  清除所有对话
-                </Button>
-              </Popconfirm> */}
             </Space>
           )
         }}
@@ -401,13 +372,13 @@ function ChatPage() {
                     status={item.status}
                     content={item.text}
                     time={item.dateTime}
-                    model={item.requestOptions.options?.model}
+                    model={item?.requestOptions?.options?.model}
                     onDelChatMessage={() => {
                       delChatMessage(selectChatId, item.id)
                     }}
                     onRefurbishChatMessage={() => {
                       console.log(item)
-                      sendChatCompletions(item.requestOptions.userMessage, item)
+                      sendChatCompletions(item?.requestOptions?.userMessage, {...item, id: ''})
                     }}
                     pluginInfo={item.plugin_info}
                   />
@@ -439,8 +410,12 @@ function ChatPage() {
               }}
               onStopFetch={() => {
                 // 结束
+                console.log(2222233)
                 setFetchController((c) => {
                   c?.abort()
+                  setChatDataInfo(selectChatId, currentId, {
+                    status: 'pass'
+                  })
                   return null
                 })
               }}
