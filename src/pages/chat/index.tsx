@@ -144,11 +144,11 @@ function ChatPage() {
         // 将获取到的数据片段显示在屏幕上
         const text = new TextDecoder('utf-8').decode(value)
         const texts = handleChatData(text)
-        console.log(111,alltext, text);
+        // console.log(111,alltext, text);
         for (let i = 0; i < texts.length; i++) {
           const { timestamp, parentMessageId, answer, segment } = texts[i];
-          console.log('answer', `${answer}`)
-          alltext += answer;
+          // console.log('answer', `${answer}`)
+          alltext = answer;
           if (segment === 'start') {
             if (userMessageId) {
               setChatDataInfo(selectChatId, userMessageId, {

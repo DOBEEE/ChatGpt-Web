@@ -17,7 +17,6 @@ export function handleChatData(text: string) {
 
     if (line !== '') {
       try {
-        console.log('line', line)
         const cache = line.split('\0\0');
         const parsedData = {
           success: cache[0],
@@ -27,7 +26,6 @@ export function handleChatData(text: string) {
           segment: cache[4],
           timestamp: cache[5],
         };
-        console.log('line2', parsedData)
         if (isValidData(parsedData)) {
           data.push({ ...parsedData })
         } else {
