@@ -153,8 +153,17 @@ function ChatPage() {
         const texts = handleChatData(text)
         // console.log(111,alltext, text);
         for (let i = 0; i < texts.length; i++) {
-          const { timestamp, parentMessageId, answer, segment } = texts[i];
+          const { success, message: _message, timestamp, answer, segment } = texts[i];
           // console.log('answer', `${answer}`)
+          if (!success) {
+            setFetchController(null);
+            setChatDataInfo(selectChatId, assistantMessageId, {
+              status: 'pass',
+              text: alltext ? alltext : '❌ 请求异常，请稍后在尝试。',
+            })
+            message.error(_message || '请求异常, 请稍后在尝试')
+            break;
+          }
           alltext = answer;
           if (segment === 'start') {
             if (userMessageId) {
