@@ -129,7 +129,14 @@ function ChatPage() {
       })
       .catch((error) => {
         // 终止： AbortError
-        console.log(error.name)
+        console.log(error.name);
+        setChatDataInfo(selectChatId, assistantMessageId, {
+          status: 'error',
+          text: `${'❌ 请求异常，请稍后在尝试。'}`
+        })
+        fetchController?.abort()
+        setFetchController(null)
+        message.error('请求失败')
       })
     
     // if (requestOptions.model === 'gpt-4') {

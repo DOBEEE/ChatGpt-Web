@@ -312,7 +312,24 @@ const postStream = async <T>(
     }
   })
   const response = await fetch(baseUrl, options)
-  
+
+  if (response.status !== 200) {
+    if (response.status === 401) {
+      userStore.getState().logout()
+      userStore.getState().setLoginModal(true)
+      chatStore.getState().clearChats()
+    } else {
+      notification.error({
+        message: '错误',
+        description: '网络请求错误',
+        style: {
+          top: 60,
+          zIndex: 1011
+        }
+      })
+      throw new Error('网络请求错误')
+    }
+  }
   if (
     response.headers.has('Content-Type') &&
     response.headers.get('Content-Type')?.includes('application/json')
