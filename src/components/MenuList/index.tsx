@@ -3,7 +3,7 @@ import styles from './index.module.less'
 import { joinTrim } from '@/utils'
 import { Link, useLocation } from 'react-router-dom'
 import { useMemo } from 'react'
-
+import { chatStore, userStore } from '@/store'
 type Props = {
   mode?: 'vertical' | 'horizontal' | 'inline'
 }
@@ -21,6 +21,9 @@ function MenuList(props: Props) {
     <div className={joinTrim([styles.menuList, styles['menuList_' + mode]])}>
       {menuList.web.map((item) => {
         const isExternal = /^(http:\/\/|https:\/\/)/.test(item.path)
+        if (item.name === '网页中心') {
+          item.path += encodeURIComponent(`${userStore.getState().username}`);
+        }
         return (
           <Link key={item.path} to={item.path} target={isExternal ? '_blank' : '_self'}>
             <div
