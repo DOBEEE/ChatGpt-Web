@@ -21,11 +21,12 @@ function MenuList(props: Props) {
     <div className={joinTrim([styles.menuList, styles['menuList_' + mode]])}>
       {menuList.web.map((item) => {
         const isExternal = /^(http:\/\/|https:\/\/)/.test(item.path)
+        let path = item.path;
         if (item.name === '网页中心') {
-          item.path += encodeURIComponent(`${userStore.getState().username}`);
+          path = item.path + encodeURIComponent(`${userStore.getState().username}`);
         }
         return (
-          <Link key={item.path} to={item.path} target={isExternal ? '_blank' : '_self'}>
+          <Link key={path} to={path} target={isExternal ? '_blank' : '_self'}>
             <div
               className={joinTrim([styles.item, pathname === item.path ? styles.select_item : ''])}
             >
