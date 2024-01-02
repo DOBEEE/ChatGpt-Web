@@ -65,7 +65,7 @@ const web = [
     message: '代码平台'
   },
   {
-    path: 'http://47.94.95.28:8809/index/',
+    path: 'http://www.yixinshe.vip/works/index/',
     name: '网页中心',
     icon: <GithubOutlined />,
     message: '网页中心'
