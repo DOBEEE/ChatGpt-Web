@@ -426,7 +426,6 @@ function ChatPage() {
               }}
               onStopFetch={() => {
                 // 结束
-                console.log(2222233)
                 setFetchController((c) => {
                   c?.abort()
                   setChatDataInfo(selectChatId, currentId, {

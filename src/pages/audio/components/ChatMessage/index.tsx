@@ -145,9 +145,17 @@ function ChatMessage({
         </div>
       )
     }
+    const renderMdHtml = mdi.render(item.text)
     return (
       <div ref={markdownBodyRef}>
         <AudioBubble audioSrc={value} duration={item.time} />
+        <div
+          ref={markdownBodyRef}
+          className="markdown-body"
+          dangerouslySetInnerHTML={{
+            __html: renderMdHtml
+          }}
+        />
       </div>
     )
     

@@ -1,4 +1,4 @@
-import { Button, Space, Select, message } from 'antd'
+import { Button, Space, Select, message, Col, InputNumber, Row, Slider } from 'antd'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import Recorder from 'js-audio-recorder';
 import styles from './index.module.less'
@@ -34,7 +34,8 @@ function ChatPage() {
 
   const isMobile = useMobile()
   const [model, setModel] = useState('gpt-3.5-turbo');
-  // const [character, setCharacter]= useState(aiCharts[0].prompt);
+  const [lang, setLang]= useState('默认');
+  const [speed, setSpeed]= useState(100);
   useLayoutEffect(() => {
     if (scrollRef) {
       scrollToBottom()
@@ -171,6 +172,7 @@ function ChatPage() {
       setChatInfo(selectChatId, {
         id: userMessageId,
         message: res.url,
+        text: res.text,
         time: res.avtime,
         dateTime: formatTime(),
         status: 'pass',
@@ -243,10 +245,9 @@ function ChatPage() {
   
   // 停止录制
   const stopRecording = () => {
-    console.log(11223,'stop')
     recorder.current.stop();
     const audioBlob = recorder.current.getWAVBlob()
-    if (recorder.current.duration < 2) {
+    if (recorder.current.duration < 1) {
       message.error('时间太短了~');
       return;
     }
@@ -347,15 +348,34 @@ function ChatPage() {
                   setModel(e.toString());
                 }}
               />
-              {/* <Select
+              <Select
                 size="middle"
                 style={{ width: '100%' }}
-                value={character}
-                options={aiCharts.map(i => ({label: i.act, value: i.prompt}))}
+                value={lang}
+                options={[{label: '默认', value: '默认'}, {label: '中文', value: '中文'}, {label: '英语', value: '英语'}]}
                 onChange={(e) => {
-                  setCharacter(e.toString())
+                  setLang(e.toString());
                 }}
-              /> */}
+              />
+             <Row>
+              <Col span={14}>
+                <Slider
+                  min={1}
+                  max={100}
+                  onChange={(v) => setSpeed(Number(v))}
+                  value={typeof speed === 'number' ? speed : 100}
+                />
+              </Col>
+              <Col span={2}>
+                <InputNumber
+                  min={1}
+                  max={100}
+                  style={{ margin: '0 16px' }}
+                  value={speed}
+                  onChange={(v) => setSpeed(Number(v))}
+                />
+              </Col>
+            </Row>
             </Space>
           )
         }}

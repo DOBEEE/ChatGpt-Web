@@ -115,7 +115,7 @@ function AllInput(props: Props) {
           <SyncOutlined spin /> 停止回答 🤚
         </Button>
       ) : (
-        <Button type="primary" style={{width: '100%', height: 40}} onMouseDown={startRecording} onMouseUp={stopRecording} onTouchEnd={stopRecording} onTouchStart={startRecording}>
+        <Button className={styles.audioStartBtn} type="primary" style={{width: '100%', height: 40}} onMouseDown={startRecording} onMouseUp={stopRecording} onTouchEnd={stopRecording} onTouchStart={startRecording}>
           按下说话
         </Button>
       )}
