@@ -14,6 +14,7 @@ import { useScroll } from '@/hooks/useScroll'
 // import useDocumentResize from '@/hooks/useDocumentResize'
 import Layout from '@/components/Layout'
 import useMobile from '@/hooks/useMobile'
+import {grade as gradeOptions} from './config'
 import MessageItem from './components/MessageItem'
 
 function ChatPage() {
@@ -35,6 +36,7 @@ function ChatPage() {
   const isMobile = useMobile()
   const [model, setModel] = useState('gpt-3.5-turbo');
   const [lang, setLang]= useState('默认');
+  const [grade, setGrade]= useState('成人');
   const [speed, setSpeed]= useState(100);
   useLayoutEffect(() => {
     if (scrollRef) {
@@ -146,6 +148,9 @@ function ChatPage() {
       chatid: selectChatId,
       model: model,
       prompts: '',
+      lang,
+      speed,
+      grade,
       messages: [...chatMessages.slice(chatMessages.length - 3 < 0 ? 0 : chatMessages.length - 3).map(i => ({
         role: i.role,
         content: i.message
@@ -357,6 +362,15 @@ function ChatPage() {
                   setLang(e.toString());
                 }}
               />
+              <Select
+                size="middle"
+                style={{ width: '100%' }}
+                value={grade}
+                options={gradeOptions}
+                onChange={(e) => {
+                  setGrade(e.toString());
+                }}
+              />
              <Row>
               <Col span={14}>
                 <Slider
@@ -375,7 +389,7 @@ function ChatPage() {
                   onChange={(v) => setSpeed(Number(v))}
                 />
               </Col>
-            </Row>
+             </Row>
             </Space>
           )
         }}
