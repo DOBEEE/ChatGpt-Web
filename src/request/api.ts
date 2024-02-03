@@ -181,7 +181,9 @@ export function postPersona(params: PersonaInfo){
 export function putUserPassword(params: RequestLoginParams) {
   return request.put('/api/user/password', params)
 }
-
+export function shareImgs(params: RequestLoginParams) {
+  return request.post('/api/create', params)
+}
 // 获取配置数据
 export function getConfig() {
   return request.get<ResponseConfigData>('/api/config')

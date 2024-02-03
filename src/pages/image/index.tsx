@@ -7,7 +7,6 @@ import {
 } from '@ant-design/icons'
 import { Button, Modal,Radio, Popconfirm, Space, Tabs, Select, message, Badge } from 'antd'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-
 import styles from './index.module.less'
 import { imageStore, configStore, userStore } from '@/store'
 import { userAsync, chatAsync, imageAsync } from '@/store/async'
@@ -179,7 +178,12 @@ function ChatPage() {
   }
 
   const [fetchController, setFetchController] = useState<AbortController | null>(null)
-
+  const shareImgsHandle = (params) => {
+    return services.shareImgs({
+      ...params,
+      token,
+    })
+  }
   // 对话
   async function sendChatCompletions(vaule: string, refurbishOptions?: ImgChatGpt) {
     if (!token) {
@@ -366,11 +370,13 @@ function ChatPage() {
           >
             <AllInput
               disabled={!!fetchController}
+              shareImgsHandle={shareImgsHandle}
               onSend={(value) => {
                 if (value.startsWith('/')) return
                 sendChatCompletions(value)
                 scrollToBottomIfAtBottom()
               }}
+              chatMessages={chatMessages}
               clearMessage={() => {
                 if (token) {
                   imageAsync.fetchDelUserMessages({ id: selectChatId, type: 'clear' })

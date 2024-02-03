@@ -149,13 +149,15 @@ function ChatMessage({
     return (
       <div ref={markdownBodyRef}>
         <AudioBubble audioSrc={value} duration={item.time} />
-        {item.text && <div
+        {item.text && (
+<div
           ref={markdownBodyRef}
           className="markdown-body"
           dangerouslySetInnerHTML={{
             __html: mdi.render(item.text)
           }}
-        />}
+/>
+)}
       </div>
     )
     
