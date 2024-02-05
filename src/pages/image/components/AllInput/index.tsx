@@ -198,12 +198,12 @@ function AllInput(props: Props) {
           onClick={() => {
             setOpen(true);
           }}
-        >
+      >
           分享
-        </Button>
+      </Button>
         <Drawer
           size="large"
-          footer={
+          footer={(
             <div>
             <Button
               style={{marginRight: 10}}
@@ -224,6 +224,7 @@ function AllInput(props: Props) {
                 setCacheFileList([]);
                 setOpen(false)
                 setShareText('')
+                message.success('分享作品成功！可以去IUShow小程序查看并分享啦！');
               }}
             >
               确定
@@ -241,10 +242,10 @@ function AllInput(props: Props) {
               取消
             </Button>
             </div>
-            
-          }
-        title="分享" onClose={() => setOpen(false)} open={open}>
-          <Input.TextArea value={shareText} style={{marginBottom: 20}} rows={4} onChange={(e) => setShareText(e.target.value)}></Input.TextArea>
+          )}
+        title="分享到IUShow，和小伙伴们一起欣赏！" onClose={() => setOpen(false)} open={open}
+        >
+          <Input.TextArea value={shareText} style={{marginBottom: 20}} rows={4} onChange={(e) => setShareText(e.target.value)} />
           <Upload
             listType="picture-card"
             fileList={fileList}
@@ -259,7 +260,7 @@ function AllInput(props: Props) {
         </Drawer>
         <Drawer title="选择图片" 
         size="large"
-          footer={
+          footer={(
             <div>
             <Button
               style={{marginRight: 10}}
@@ -284,9 +285,9 @@ function AllInput(props: Props) {
               取消
             </Button>
             </div>
-            
-          }
-           onClose={() => setOpen2(false)} open={open2}>
+          )}
+           onClose={() => setOpen2(false)} open={open2}
+        >
         <Image.PreviewGroup
           preview={{
             onChange: (current, prev) => console.log(`current index: ${current}, prev index: ${prev}`),
@@ -301,7 +302,7 @@ function AllInput(props: Props) {
                     src={i.text}
                     preview={false}
                   />
-                  <Checkbox style={{position: 'absolute', right: 10, top: 10}} checked={!!cacheFileList.find(ii => ii.url == i.text)}></Checkbox>
+                  <Checkbox style={{position: 'absolute', right: 10, top: 10}} checked={!!cacheFileList.find(ii => ii.url == i.text)} />
                 </div>
               ))
             }
