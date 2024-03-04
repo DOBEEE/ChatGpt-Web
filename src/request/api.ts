@@ -85,6 +85,15 @@ export function postImageCompletions(
 ) {
   return request.postStreams<Response>('/api/imagechat', params, config, true)
 }
+export function postImage2Completions(
+  params: RequestChatOptions,
+  config?: {
+    headers?: { [key: string]: any }
+    options?: { [key: string]: any }
+  }
+) {
+  return request.postStreams<Response>('/api/portrait', params, config, true)
+}
 
 export function postAudioChatCompletion(
   params,
@@ -242,4 +251,8 @@ export function setDrawImages(params: {
   status?: number
 }){
 	return request.put('/api/images', params)
+}
+
+export function upload(params: any) {
+  return request.post<ResponseConfigData>('/api/upload', params)
 }

@@ -5,11 +5,12 @@ import { useMemo, useState } from 'react'
 import { promptStore } from '@/store'
 import useDocumentResize from '@/hooks/useDocumentResize'
 import { htmlToImage } from '@/utils'
-import Share from '@/components/Share'
 import promptsImage from '@/assets/prompts-image.json';
+import Share from '@/components/Share'
 type Props = {
   onSend: (value: string) => void
   disabled?: boolean
+  imageUrl: string
   clearMessage?: () => void
   onStopFetch?: () => void
   chatMessages: any;
@@ -18,30 +19,12 @@ type Props = {
 
 function AllInput(props: Props) {
   const [prompt, setPrompt] = useState('')
-  const { localPrompt } = promptStore()
   const bodyResize = useDocumentResize()
 
   const [downloadModal, setDownloadModal] = useState({
     open: false,
     loading: false
   })
-
-  const searchOptions = useMemo(() => {
-    if (prompt.startsWith('/')) {
-      return promptsImage
-        .filter((item: { key: string }) =>
-          item.key.toLowerCase().includes(prompt.substring(1).toLowerCase())
-        )
-        .map((obj) => {
-          return {
-            label: obj.key,
-            value: obj.value
-          }
-        })
-    } else {
-      return []
-    }
-  }, [prompt])
 
   // 保存聊天记录到图片
   async function downloadChatRecords() {
@@ -67,7 +50,7 @@ function AllInput(props: Props) {
           <CloudDownloadOutlined />
         </div>
       )}
-      <AutoComplete
+      {/* <AutoComplete
         value={prompt}
         options={searchOptions}
         style={{
@@ -81,8 +64,8 @@ function AllInput(props: Props) {
           // 修改为选中放置在输入框内
           setPrompt(value)
         }}
-      >
-        <Input.TextArea
+      > */}
+        {/* <Input.TextArea
           value={prompt}
           showCount
           maxLength={120}
@@ -106,8 +89,8 @@ function AllInput(props: Props) {
           onChange={(e) => {
             setPrompt(e.target.value)
           }}
-        />
-      </AutoComplete>
+        /> */}
+      {/* </AutoComplete> */}
       {props.disabled ? (
         <Button
           className={styles.allInput_button}
@@ -127,17 +110,16 @@ function AllInput(props: Props) {
           className={styles.allInput_button}
           type="primary"
           size="large"
-          disabled={!prompt || props.disabled}
+          disabled={!props.imageUrl || props.disabled}
           onClick={() => {
             props?.onSend?.(prompt)
             setPrompt('')
           }}
         >
-          发送
+          变身
         </Button>
       )}
       <Share chatMessages={props.chatMessages} />
-      
       <Modal
         title="保存当前对话记录"
         open={downloadModal.open}

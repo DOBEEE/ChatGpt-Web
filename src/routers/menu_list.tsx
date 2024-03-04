@@ -59,6 +59,12 @@ const web = [
     message: '与智能AI进行对话交流'
   },
   {
+    path: '/img2img',
+    name: '图生图',
+    icon: <PictureOutlined />,
+    message: '图生图'
+  },
+  {
     path: 'http://47.94.95.28:8808/tree?token=1b04dee89bdbba0c4bb7bbcade6b021a425660481b869c90',
     name: '代码平台',
     icon: <RadarChartOutlined />,
@@ -69,6 +75,18 @@ const web = [
     name: '网页中心',
     icon: <GithubOutlined />,
     message: '网页中心'
+  },
+  {
+    path: 'https://www.mindshow.fun/#/folder/import',
+    name: 'PPT制作',
+    icon: <GoldenFilled />,
+    message: 'PPT制作'
+  },
+  {
+    path: 'https://markmap.js.org/reql',
+    name: '思维导图',
+    icon: <PictureOutlined />,
+    message: '思维导图'
   },
   // {
   //   path: '/create',
