@@ -36,12 +36,14 @@ module.exports = {
       'react/prop-types': 0,
       // eslint-plugin-react-hooks 的配置
       'react-hooks/rules-of-hooks' : 'error',
+      'react/no-array-index-key': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
       'react-hooks/exhaustive-deps' : 'warn',
       'no-useless-escape': 'warn',
       'react/react-in-jsx-scope': 0,
       'prefer-const': 'error',
       'no-constant-condition': 'warn',
-
+      '@typescript-eslint/no-unused-vars': 'off',
       // https://github.com/jsx-eslint/eslint-plugin-react/blob/master/docs/rules/no-is-mounted.md
       'react/no-is-mounted': 'warn',
 
@@ -81,7 +83,7 @@ module.exports = {
       'react/jsx-curly-spacing': ['warn', { when: 'never' }],
 
       // https://github.com/jsx-eslint/eslint-plugin-react/blob/master/docs/rules/no-array-index-key.md
-      'react/no-array-index-key': 'error',
+      'react/no-array-index-key': 'off',
 
       // https://github.com/jsx-eslint/eslint-plugin-react/blob/master/docs/rules/require-default-props.md
       'react/require-default-props': [

@@ -256,3 +256,10 @@ export function setDrawImages(params: {
 export function upload(params: any) {
   return request.post<ResponseConfigData>('/api/upload', params)
 }
+export function testsearch(params: any) {
+  return request.post<ResponseConfigData>('/api/testsearch', params)
+}
+
+export function testresult(params: any) {
+  return request.get<ResponseConfigData>('/api/testresult', params)
+}

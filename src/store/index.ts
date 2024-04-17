@@ -8,5 +8,17 @@ import pluginStore from './plugin/slice'
 import imageStore from './image/slice'
 import img2Store from './img2/slice'
 import audioStore from './audio/slice'
-
-export { chatStore,imageStore,img2Store, audioStore,shopStore, drawStore, configStore, promptStore, userStore, pluginStore }
+import mathStore from './aimath/slice'
+export {
+  chatStore,
+  mathStore,
+  imageStore,
+  img2Store,
+  audioStore,
+  shopStore,
+  drawStore,
+  configStore,
+  promptStore,
+  userStore,
+  pluginStore
+}

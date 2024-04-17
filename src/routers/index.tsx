@@ -20,6 +20,7 @@ const Img2Page = React.lazy(() => import('@/pages/img2img'))
 const ImagePage = React.lazy(() => import('@/pages/image'))
 const MappingPage = React.lazy(() => import('@/pages/mapping'))
 const ShopPage = React.lazy(() => import('@/pages/shop'))
+const MathPage = React.lazy(() => import('@/pages/aiMath'))
 const UserPage = React.lazy(() => import('@/pages/user'))
 const LoginPage = React.lazy(() => import('@/pages/login'))
 const ResultPage = React.lazy(() => import('@/pages/result'))
@@ -91,6 +92,16 @@ export const webRouter: RouteOptions[] = [
     id: 'Img2Page',
     path: '/img2img',
     element: <Img2Page />,
+    children: [],
+    configure: {
+      verifToken: false,
+      role: ['user', 'administrator']
+    }
+  },
+  {
+    id: 'AiMath',
+    path: '/math',
+    element: <MathPage />,
     children: [],
     configure: {
       verifToken: false,

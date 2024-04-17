@@ -164,7 +164,7 @@ const chatStore = create<ChatState>()(
         })
     }),
     {
-      name: 'image2_storage', // name of item in the storage (must be unique)
+      name: 'aimath_storage', // name of item in the storage (must be unique)
       storage: createJSONStorage(() => localStorage) // (optional) by default the 'localStorage' is used
     }
   )

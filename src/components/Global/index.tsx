@@ -1,4 +1,4 @@
-import { chatStore, configStore, imageStore, audioStore } from '@/store'
+import { chatStore, configStore, imageStore,img2Store, audioStore } from '@/store'
 import { configAsync } from '@/store/async'
 import { useEffect, useLayoutEffect } from 'react'
 import LoginModal from '../LoginModal'
@@ -16,6 +16,7 @@ function Global(props: Props) {
   const { chats, addChat, changeSelectChatId } = chatStore()
   const { chats: audioChats, addChat: addAudioChat, changeSelectChatId: changeAudioSelectChatId } = audioStore()
   const { chats: imgChats, addChat: addImageChat, changeSelectChatId: changeImgSelectChatId } = imageStore()
+  const { chats: img2Chats, addChat: addImage2Chat, changeSelectChatId: changeImg2SelectChatId } = img2Store()
   const { token, loginModal, setLoginModal } = userStore()
 
   const openNotification = ({
@@ -69,6 +70,11 @@ function Global(props: Props) {
       addImageChat()
     } else {
       changeImgSelectChatId(imgChats[0].id)
+    }
+    if (img2Chats.length <= 0) {
+      addImage2Chat()
+    } else {
+      changeImg2SelectChatId(img2Chats[0].id)
     }
     if (audioChats.length <= 0) {
       addAudioChat()

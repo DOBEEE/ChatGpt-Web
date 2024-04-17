@@ -8,6 +8,22 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        }
+      };
+      function toLatex(elems) {
+        //console.log('toLatex called with:', elems);
+        MathJax.texReset();
+        MathJax.typesetClear();
+        MathJax.typesetPromise(elems);
+      }
+      </script>
+      <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      <!-- <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script> -->
+    <script id="MathJax-script" src="/tex-mml-chtml.js"></script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

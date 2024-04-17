@@ -60,9 +60,15 @@ const web = [
   },
   {
     path: '/img2img',
-    name: '图生图',
+    name: 'AI 变身',
     icon: <PictureOutlined />,
-    message: '图生图'
+    message: 'AI 变身'
+  },
+  {
+    path: '/math',
+    name: 'AI 数学',
+    icon: <PictureOutlined />,
+    message: 'AI 数学'
   },
   {
     path: 'http://47.94.95.28:8808/tree?token=1b04dee89bdbba0c4bb7bbcade6b021a425660481b869c90',
@@ -83,9 +89,9 @@ const web = [
     message: 'PPT制作'
   },
   {
-    path: 'https://markmap.js.org/reql',
+    path: 'https://markmap.js.org/repl',
     name: '思维导图',
-    icon: <PictureOutlined />,
+    icon: <GitlabFilled />,
     message: '思维导图'
   },
   // {
