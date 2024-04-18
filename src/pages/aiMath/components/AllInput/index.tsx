@@ -138,7 +138,7 @@ function AllInput(props: Props) {
           className={styles.allInput_button}
           type="primary"
           size="large"
-          disabled={!prompt || !props.imageUrl || props.disabled}
+          disabled={!props.imageUrl || props.disabled}
           onClick={() => {
             props?.onSend?.(prompt)
             setPrompt('')

@@ -84,7 +84,7 @@ function ChatPage() {
           addChat()
         }}
       >
-        新建绘图
+        新建解题
       </Button>
     )
   }
