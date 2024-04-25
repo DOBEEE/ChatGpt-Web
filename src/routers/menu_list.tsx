@@ -66,9 +66,9 @@ const web = [
   },
   {
     path: '/math',
-    name: 'AI 数学',
+    name: '永文老师',
     icon: <PictureOutlined />,
-    message: 'AI 数学'
+    message: '永文老师'
   },
   {
     path: 'http://47.94.95.28:8808/tree?token=1b04dee89bdbba0c4bb7bbcade6b021a425660481b869c90',

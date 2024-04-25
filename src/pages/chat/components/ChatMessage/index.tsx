@@ -57,8 +57,10 @@ function ChatMessage({
   model,
   onDelChatMessage,
   onRefurbishChatMessage,
-  pluginInfo
+  pluginInfo,
+  taskid
 }: {
+  taskid: string
   position: 'left' | 'right'
   content?: string
   status: 'pass' | 'loading' | 'error' | string

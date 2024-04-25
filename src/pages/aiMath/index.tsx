@@ -216,8 +216,7 @@ function ChatPage() {
     </button>
   );
   const handleChange = (info) => {
-    console.log(1111, info.fileList.map(i => ({uid:i.uid,status: i.status, url: i?.response?.url})))
-    setImageUrl(info.fileList.map(i => ({uid:i.uid,status: i.status, url: i?.response?.url})));
+    setImageUrl(info?.fileList?.map(i => ({uid:i.uid,status: i.status, url: i?.response?.url})));
     return;
   };
   return (
@@ -281,7 +280,7 @@ function ChatPage() {
           } */}
           <div ref={scrollRef} className={styles.chatPage_container_one}>
             <div className="analysis-wrap" id="image-wrapper">
-              {chatMessages.map((item) => {
+              {chatMessages?.map((item) => {
                 return (
                   <ChatMessage
                     key={item.dateTime + item.role + item.text + item.taskid}
