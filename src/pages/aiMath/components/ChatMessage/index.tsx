@@ -55,7 +55,6 @@ function ChatMessage({
   content,
   status,
   time,
-  model,
   teachurl,
   taskid,
   requestOptions,
@@ -71,7 +70,6 @@ function ChatMessage({
   time: string
   token: string
   taskid: string
-  model?: string
   teachurl: string
   requestOptions: any
   updateChatValue: any
@@ -258,7 +256,7 @@ function ChatMessage({
         return chatAvatar({
           style: { marginRight: 8 },
           isShow: position === 'left',
-          icon: model && model.indexOf('gpt-4') !== -1 ? ai4Logo : ai3Logo
+          icon: ai4Logo
         })
       }, [])}
       <div className={styles.chatMessage_content}>

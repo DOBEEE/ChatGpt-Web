@@ -41,6 +41,30 @@ function ChatPage() {
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState([]);
   const [, refresh] = useState({});
+  useEffect(() => {
+    const url = new URL(location.href)
+    const searchs = new URLSearchParams(url.search)
+    const taskid = searchs.get('taskid');
+    if(taskid) {
+      services
+      .testresult({
+        taskid,
+        token,
+        type: 1
+      })
+      .then((res) => {
+        if (res?.analysis) {
+          setChatDataInfo(selectChatId, taskid, {
+            taskid: taskid,
+            text: res?.analysis,
+            teachurl: res?.teachurl,
+            dateTime: res?.timestamp,
+            status: 'pass'
+          });
+        }
+      })
+    }
+  }, [])
   useLayoutEffect(() => {
     if (scrollRef) {
       scrollToBottom()
@@ -302,7 +326,6 @@ function ChatPage() {
                       refresh({});
                     }}
                     requestOptions={item.requestOptions}
-                    model={item.requestOptions.options?.model}
                     onDelChatMessage={() => {
                       delChatMessage(selectChatId, item.id)
                     }}
