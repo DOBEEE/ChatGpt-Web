@@ -5,7 +5,7 @@ import { useMemo, useState } from 'react'
 import { promptStore } from '@/store'
 import useDocumentResize from '@/hooks/useDocumentResize'
 import { htmlToImage } from '@/utils'
-
+import { useNavigate } from 'react-router-dom'
 type Props = {
   onSend: (value: string) => void
   disabled?: boolean
@@ -17,7 +17,7 @@ type Props = {
 function AllInput(props: Props) {
   const [prompt, setPrompt] = useState('')
   const { localPrompt } = promptStore()
-
+  const navigate = useNavigate()
   const bodyResize = useDocumentResize()
 
   const [downloadModal, setDownloadModal] = useState({
@@ -147,7 +147,16 @@ function AllInput(props: Props) {
           发送
         </Button>
       )}
-
+        <Button
+          className={styles.allInput_button}
+          type="primary"
+          size="large"
+          onClick={() => {
+            navigate('/aimathlist');
+          }}
+        >
+          题库
+        </Button>
       <Modal
         title="保存当前对话记录"
         open={downloadModal.open}

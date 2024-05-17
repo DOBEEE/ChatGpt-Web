@@ -24,7 +24,7 @@ const MathPage = React.lazy(() => import('@/pages/aiMath'))
 const UserPage = React.lazy(() => import('@/pages/user'))
 const LoginPage = React.lazy(() => import('@/pages/login'))
 const ResultPage = React.lazy(() => import('@/pages/result'))
-const AiMathResult = React.lazy(() => import('@/pages/aiMathResult'))
+const AiMathList = React.lazy(() => import('@/pages/aiMathList'))
 const Page404 = React.lazy(() => import('@/pages/404'))
 
 import AdminPage from '@/pages/admin'
@@ -70,9 +70,9 @@ export const webRouter: RouteOptions[] = [
     }
   },
   {
-    id: 'AiMathResult',
-    path: '/aiMathResult',
-    element: <AiMathResult />,
+    id: 'AiMathList',
+    path: '/aimathlist',
+    element: <AiMathList />,
     children: [],
     configure: {
       verifToken: false,

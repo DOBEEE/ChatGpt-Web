@@ -12,11 +12,11 @@ type Props = {
 
 function MenuList(props: Props) {
   const location = useLocation()
-
+const { auth } = userStore();
   const pathname = useMemo(() => {
     return location.pathname
   }, [location])
-
+  console.log(3333, auth)
   const { mode = 'horizontal' } = props
   if (mode === 'horizontal') {
     return (
@@ -26,6 +26,9 @@ function MenuList(props: Props) {
           let path = item.path;
           if (item.name === '网页中心') {
             path = item.path + encodeURIComponent(`${userStore.getState().username}`);
+          }
+          if (item.name === '永文老师' && auth !== 1) {
+            return;
           }
           return (
             <Link key={path} to={path} target={isExternal ? '_blank' : '_self'}>

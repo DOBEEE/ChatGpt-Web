@@ -17,6 +17,7 @@ export async function fetchUserInfo() {
   const response = await getUserInfo({token: userStore.getState().token})
   if (!response.code) {
     userStore.getState().login({
+      auth: response?.auth,
       token: userStore.getState().token,
       tokens: response?.tokens,
       username: response?.user

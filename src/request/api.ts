@@ -42,6 +42,10 @@ export function postLogin(params: RequestLoginParams) {
 export function getUserInfo(params) {
   return request.get<UserInfo>('/api/userinfo', params)
 }
+// 获取题目
+export function getClassinfo(params) {
+  return request.get<UserInfo>('/api/classinfo', params)
+}
 
 // 获取用户信息
 export function getUserSession() {
