@@ -64,7 +64,6 @@ export default function Index() {
       })
   }, [])
   const onSearch = (v) => {
-    console.log(333, v)
     if (!v) {
       setList(cache);
       return;
@@ -76,7 +75,6 @@ export default function Index() {
     let res = []
     cache.forEach((item, idx) => {
       _res.push({...item, classes: []});
-      console.log(333555, JSON.stringify(_res))
       item.classes.forEach((i, idx2) => {
         _res[idx].classes.push({...i, tests: []});
         i.tests.forEach(ii => {
@@ -93,7 +91,7 @@ export default function Index() {
   return (
     <div>
       <div style={{padding: '20px'}}>
-        <Search placeholder="input search text" onSearch={onSearch} enterButton />
+        <Search placeholder="请输入要搜索的题目编号" onSearch={onSearch} enterButton />
       </div>
       
       {
@@ -103,7 +101,7 @@ export default function Index() {
             {
               item.classes.map((i, idx) => (
                 <div key={idx} style={{padding: '20px'}}>
-                  <Card title={i.name} style={{ width: '100%', height: '300px' }}>
+                  <Card title={i.name} style={{ width: '100%' }}>
                     <Flex wrap gap="small">
                       {
                         i.tests.map(ii => (
@@ -113,7 +111,7 @@ export default function Index() {
                             width={300}
                             preview={false}
                             onClick={() => {
-                              navigate('/math?taskid=' + ii.tid)
+                              navigate('/math?taskid=' + ii.xzid)
                             }}
                             src={ii.img}
                           />

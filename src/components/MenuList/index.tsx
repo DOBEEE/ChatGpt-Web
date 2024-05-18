@@ -27,7 +27,7 @@ const { auth } = userStore();
           if (item.name === '网页中心') {
             path = item.path + encodeURIComponent(`${userStore.getState().username}`);
           }
-          if (item.name === '永文老师' && auth !== 1) {
+          if (item.name === '小灯学长' && auth !== 1) {
             return;
           }
           return (

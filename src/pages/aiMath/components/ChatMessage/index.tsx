@@ -199,7 +199,7 @@ function ChatMessage({
         {
           value.analysis_json.map((i, idx) => (
             <div key={'s' + idx}>
-              <div style={{marginBottom: 10, fontSize: 14}}>{i.content}</div>
+              <div style={{marginBottom: 10, fontSize: 14}} dangerouslySetInnerHTML={{__html: i.content}}></div>
               {
                 i.image_list.length > 0 && i.image_list.map(img => (
                   <Image key={img} src={img} />
