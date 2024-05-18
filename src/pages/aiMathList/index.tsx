@@ -25,28 +25,28 @@ const { Search } = Input;
 //   }
 
   // 对搜索结果进行清理，删除为null的部分
-  function clean(results) {
-    if (Array.isArray(results)) {
-      // 过滤非null值，并对数组项递归清理
-      return results.map(clean).filter(value => value != null);
-    } else if (results && typeof results === 'object') {
-      // 清理对象属性中的null值
-      Object.keys(results).forEach(key => {
-        results[key] = clean(results[key]);
-        if (results[key] == null) {
-          delete results[key];
-        }
-      });
-      // 如果对象为空，返回null
-      return Object.keys(results).length > 0 ? results : null;
-    }
-    // 返回处理后的值（包括基本数据类型和非null对象）
-    return results;
-  }
+//   function clean(results) {
+//     if (Array.isArray(results)) {
+//       // 过滤非null值，并对数组项递归清理
+//       return results.map(clean).filter(value => value != null);
+//     } else if (results && typeof results === 'object') {
+//       // 清理对象属性中的null值
+//       Object.keys(results).forEach(key => {
+//         results[key] = clean(results[key]);
+//         if (results[key] == null) {
+//           delete results[key];
+//         }
+//       });
+//       // 如果对象为空，返回null
+//       return Object.keys(results).length > 0 ? results : null;
+//     }
+//     // 返回处理后的值（包括基本数据类型和非null对象）
+//     return results;
+//   }
 
-  // 开始递归搜索，并清理结果
-  return clean(search(data, []));
-}
+//   // 开始递归搜索，并清理结果
+//   return clean(search(data, []));
+// }
 
 export default function Index() {
   const { token } = userStore();
