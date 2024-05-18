@@ -69,26 +69,26 @@ export default function Index() {
       setList(cache);
       return;
     }
-    const res = findNestedValue(cache, v);
-    console.log(3335, res)
-    setList(res);
-    // let _res = [];
-    // let res = []
-    // cache.forEach((item, idx) => {
-    //   _res.push({...item, classes: []});
-    //   console.log(333555, JSON.stringify(_res))
-    //   item.classes.forEach((i, idx2) => {
-    //     _res[idx].classes.push({...i, tests: []});
-    //     i.tests.forEach(ii => {
-    //       if (ii.tid == v) {
-    //         _res[idx].classes[idx2].tests.push({...ii})
-    //         res = JSON.parse(JSON.stringify(_res))
-    //         console.log(3335, res)
-    //         setList(res.);
-    //       }
-    //     })
-    //   })
-    // })
+    // const res = findNestedValue(cache, v);
+    // console.log(3335, res)
+    // setList(res);
+    let _res = [];
+    let res = []
+    cache.forEach((item, idx) => {
+      _res.push({...item, classes: []});
+      console.log(333555, JSON.stringify(_res))
+      item.classes.forEach((i, idx2) => {
+        _res[idx].classes.push({...i, tests: []});
+        i.tests.forEach(ii => {
+          if (ii.tid == v) {
+            _res[idx].classes[idx2].tests.push({...ii})
+            res = JSON.parse(JSON.stringify(_res))
+            console.log(3335, res)
+            setList(res);
+          }
+        })
+      })
+    })
   }
   return (
     <div>
