@@ -31,8 +31,15 @@ import {
   UsergroupAddOutlined,
   WalletFilled
 } from '@ant-design/icons'
-
+import { Image } from 'antd'
+import xiaodeng from '@/assets/xiaodeng.png'
 const web = [
+  {
+    path: '/math',
+    name: '小灯学长',
+    icon: <Image preview={false} width={40} src={xiaodeng} />,
+    message: '小灯学长'
+  },
   {
     path: '/',
     name: '对话',
@@ -64,12 +71,7 @@ const web = [
     icon: <PictureOutlined />,
     message: 'AI 变身'
   },
-  {
-    path: '/math',
-    name: '小灯学长',
-    icon: <PictureOutlined />,
-    message: '小灯学长'
-  },
+  
   {
     path: 'http://47.94.95.28:8808/tree?token=1b04dee89bdbba0c4bb7bbcade6b021a425660481b869c90',
     name: '代码平台',

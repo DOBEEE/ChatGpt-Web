@@ -54,13 +54,34 @@ function ChatPage() {
       })
       .then((res) => {
         if (res?.analysis) {
-          setChatDataInfo(selectChatId, taskid, {
-            taskid: taskid,
-            text: res?.analysis,
-            teachurl: res?.teachurl,
-            dateTime: res?.timestamp,
-            status: 'pass'
-          });
+          let userMessageId = generateUUID()
+          setChatDataInfo(selectChatId, taskid + 1, {
+            // id: userMessageId,
+            text: '',
+            dateTime: formatTime(),
+            status: 'pass',
+            role: 'user',
+            requestOptions: {
+              token,
+              chatid: selectChatId,
+              // message: vaule,
+              // imgtype: type,
+              testtext: '',
+              // imgsize: size,
+              testimg: res.testimg
+              // quality: 'hd',
+            }
+          })
+          setTimeout(() => {
+            setChatDataInfo(selectChatId, taskid, {
+              taskid: taskid,
+              text: res?.analysis,
+              teachurl: res?.teachurl,
+              dateTime: res?.timestamp,
+              status: 'pass'
+            });
+          }, 1000)
+          
         }
       })
     }

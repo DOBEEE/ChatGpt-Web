@@ -13,7 +13,7 @@ type AuthRouterProps = {
 function AuthRouter(props: AuthRouterProps) {
   const navigate = useNavigate()
   const location = useLocation()
-  const { token, user_info } = userStore()
+  const { token, user_info, auth } = userStore()
   const { pathname } = location
   const routerDetail = searchRouteDetail(pathname, [...webRouter, ...adminRouter])
   const title = routerDetail?.configure?.title
@@ -21,7 +21,12 @@ function AuthRouter(props: AuthRouterProps) {
     if (title) {
       document.title = title
     }
+
     if(token && user_info && location.pathname.includes('/login')){
+      navigate('/')
+      return 
+    }
+    if (location.pathname.includes('/math') && auth !== 1) {
       navigate('/')
       return 
     }

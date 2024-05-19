@@ -15,6 +15,7 @@ import ai4Logo from '@/assets/openai/ai4.svg'
 import avatarIcon from '@/assets/avatar.png'
 import { PluginInfo } from '@/types'
 import PluginCard from '@/components/PluginCard'
+import xiaodeng from '@/assets/xiaodeng.png'
 
 const dropdownItems = [
   // {
@@ -192,12 +193,12 @@ function ChatMessage({
     setTimeout(() => {
       MathJax.texReset();
       MathJax.typesetClear();
-      MathJax.typesetPromise(document.querySelector('.analysis-wrap')[0]);
+      MathJax.typesetPromise(document.querySelector('.analysis-wrap')?.[0]);
     }, 500)
     return (
       <div className="analysis-json">
         {
-          value.analysis_json.map((i, idx) => (
+          value?.analysis_json?.map((i, idx) => (
             <div key={'s' + idx}>
               <div style={{marginBottom: 10, fontSize: 14}} dangerouslySetInnerHTML={{__html: i.content}}></div>
               {
@@ -256,7 +257,7 @@ function ChatMessage({
         return chatAvatar({
           style: { marginRight: 8 },
           isShow: position === 'left',
-          icon: ai4Logo
+          icon: xiaodeng
         })
       }, [])}
       <div className={styles.chatMessage_content}>
