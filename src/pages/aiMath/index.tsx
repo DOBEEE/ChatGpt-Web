@@ -371,6 +371,8 @@ function ChatPage() {
             <AllInput
               disabled={!!fetchController}
               imageUrl={imageUrl?.[0]?.url}
+              setChatDataInfo={(...args) => setChatDataInfo(...args)}
+              selectChatId={selectChatId}
               // shareImgsHandle={shareImgsHandle}
               onSend={(value) => {
                 // if (value.startsWith('/')) return

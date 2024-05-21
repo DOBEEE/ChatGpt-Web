@@ -72,7 +72,8 @@ function AllInput(props: Props) {
         options={searchOptions}
         style={{
           width: '100%',
-          maxWidth: 800
+          maxWidth: 800,
+          height: 'auto'
         }}
         onSelect={(value) => {
           // 这里选择后直接发送

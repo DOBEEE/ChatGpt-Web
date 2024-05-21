@@ -16,7 +16,6 @@ const { auth } = userStore();
   const pathname = useMemo(() => {
     return location.pathname
   }, [location])
-  console.log(3333, auth)
   const { mode = 'horizontal' } = props
   if (mode === 'horizontal') {
     return (

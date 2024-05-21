@@ -6,12 +6,15 @@ import { promptStore } from '@/store'
 import useDocumentResize from '@/hooks/useDocumentResize'
 import { htmlToImage } from '@/utils'
 import { useNavigate } from 'react-router-dom'
+import ListBtn from '../listBtn'
 type Props = {
   onSend: (value: string) => void
   disabled?: boolean
   clearMessage?: () => void
   onStopFetch?: () => void
   imageUrl: string
+  selectChatId: string | number
+  setChatDataInfo: any
 }
 
 function AllInput(props: Props) {
@@ -54,7 +57,6 @@ function AllInput(props: Props) {
         message.error('下载聊天记录失败')
       })
   }
-
   return (
     <div className={styles.allInput}>
       {bodyResize.width > 800 && (
@@ -84,7 +86,8 @@ function AllInput(props: Props) {
         options={searchOptions}
         style={{
           width: '100%',
-          maxWidth: 800
+          maxWidth: 800,
+          height: 'auto'
         }}
         onSelect={(value) => {
           // 这里选择后直接发送
@@ -147,16 +150,7 @@ function AllInput(props: Props) {
           发送
         </Button>
       )}
-        <Button
-          className={styles.allInput_button}
-          type="primary"
-          size="large"
-          onClick={() => {
-            navigate('/aimathlist');
-          }}
-        >
-          题库
-        </Button>
+      <ListBtn selectChatId={props.selectChatId} setChatDataInfo={props.setChatDataInfo} />
       <Modal
         title="保存当前对话记录"
         open={downloadModal.open}
