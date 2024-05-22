@@ -64,7 +64,8 @@ export default function ListBtn({ setChatDataInfo, selectChatId }: any) {
         })
         .then((res) => {
           if (res?.analysis) {
-            setChatDataInfo(selectChatId, taskid + 1, {
+            const t = +new Date;
+            setChatDataInfo(selectChatId, taskid + t, {
               // id: userMessageId,
               text: '',
               dateTime: formatTime(),
@@ -82,7 +83,7 @@ export default function ListBtn({ setChatDataInfo, selectChatId }: any) {
               }
             })
             setTimeout(() => {
-              setChatDataInfo(selectChatId, taskid, {
+              setChatDataInfo(selectChatId, taskid + 1 + t, {
                 taskid: taskid,
                 text: res?.analysis,
                 teachurl: res?.teachurl,
