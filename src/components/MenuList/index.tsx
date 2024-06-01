@@ -29,6 +29,9 @@ const { auth } = userStore();
           if (item.name === '小灯学长' && auth !== 1) {
             return;
           }
+          if (item.name !== '小灯学长' && auth == 2) {
+            return;
+          }
           return (
             <Link key={path} to={path} target={isExternal ? '_blank' : '_self'}>
               <div
