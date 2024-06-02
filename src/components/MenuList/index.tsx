@@ -26,11 +26,15 @@ const { auth } = userStore();
           if (item.name === '网页中心') {
             path = item.path + encodeURIComponent(`${userStore.getState().username}`);
           }
-          if (item.name === '小灯学长' && auth !== 1) {
-            return;
-          }
-          if (item.name !== '小灯学长' && auth == 2) {
-            return;
+          
+          if (auth == 2) {
+            if (item.name !== '小灯学长') {
+              return;
+            }
+          } else if (auth != 1) {
+            if (item.name === '小灯学长') {
+              return;
+            }
           }
           return (
             <Link key={path} to={path} target={isExternal ? '_blank' : '_self'}>

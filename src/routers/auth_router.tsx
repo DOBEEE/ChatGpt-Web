@@ -6,6 +6,12 @@ import { userStore } from '@/store'
 type AuthRouterProps = {
   children?: React.ReactNode
 }
+const authRoute = {
+  1: 'all',
+  2: [
+    '/math'
+  ],
+}
 /**
  * 权限校验
  * 校验登录及权限
@@ -26,8 +32,12 @@ function AuthRouter(props: AuthRouterProps) {
       navigate('/')
       return 
     }
-    if (location.pathname.includes('/math') && auth !== 1) {
+    if (location.pathname.includes('/math') && auth !== 1 && auth !== 2) {
       navigate('/')
+      return 
+    }
+    if (!location.pathname.includes('/math') && auth == 2) {
+      navigate('/math')
       return 
     }
     const userRole = user_info?.role || 'user'
